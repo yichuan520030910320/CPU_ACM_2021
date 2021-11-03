@@ -27,7 +27,7 @@ always @(posedge clk_in ) begin
     
 end
 always @(*) begin
-    if (rst_in==`Rstdisable) begin
+    if (rst_in==`RstEnable) begin
         read1data<=`ZeroWorld;
     end
     else if(write_or_not==`Writeable&&readaddr1==writeaddr&&read1_or_not==`Readable) begin
@@ -44,7 +44,7 @@ always @(*) begin
 end
 
 always @(*) begin
-    if (rst_in==`Rstdisable) begin
+    if (rst_in==`RstEnable) begin
         read1data<=`ZeroWorld;
     end
     else if(write_or_not==`Writeable&&readaddr2==writeaddr&&read2_or_not==`Readable) begin

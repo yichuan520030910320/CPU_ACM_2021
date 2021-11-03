@@ -1,6 +1,6 @@
 //range and bus contain :
 //global Macro
-`define RstEnable1    1'b1
+`define RstEnable    1'b1
 `define Rstdisable    1'b0
 `define ZeroWorld     32'h00000000 
 `define Writeable   1'b1
@@ -71,8 +71,9 @@
 `define FUN3SW 3'b010
 `define FUN3ADDI 3'b000
 `define FUN3SLTI 3'b010
-`define FUN3XORI 3'b011
-`define FUN3ORI 3'b100
+`define FUN3SLTIU 3'b011
+`define FUN3XORI 3'b100
+`define FUN3ORI 3'b110
 `define FUN3ANDI 3'b111
 `define FUN3SLLI 3'b001
 `define FUN3SRLI 3'b101

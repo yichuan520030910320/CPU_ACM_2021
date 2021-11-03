@@ -3,17 +3,17 @@ module pc (
     input  wire     clk_in,
     input  wire     rst_in,
 
-    
+
     output reg [`InstAddrBus]    pc_out,
     output reg ce
 );
 always @(posedge clk_in) begin
-    if (rst_in==`RstEnable1 ) begin
-        ce=`ChipEnable;
+    if (rst_in==`RstEnable ) begin
+        ce=`ChipDisable;
     end
     else
         begin
-            ce=`ChipDisable;
+            ce=`ChipEnable;
         end
 end
 always @(posedge clk_in) begin
