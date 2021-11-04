@@ -18,6 +18,7 @@ module ID (
     output reg[`RegAddrBus] rsd_to_ex,
     output reg write_rsd_or_not,
     output reg[`Cmd_Typebus] cmdtype_to_exe,
+    output reg[`Immbus] immout,
     
     output reg[`InstAddrBus] pc_out   
     
@@ -43,10 +44,10 @@ always @(*) begin
         rsd_to_ex=`ZeroWorld;
         write_rsd_or_not=`False;
         cmdtype_to_exe=6'b000000;
-        
+        immreg=`ZeroWorld;
+        immreg=`ZeroWorld;        
         pc_out=`ZeroWorld;
-    if (rst_in==`RstEnable) begin
-        
+    if (rst_in==`RstEnable) begin        
     end
     else
         begin
@@ -264,6 +265,7 @@ always @(*) begin
                 end
             endcase
         end
+        immout=immreg;
 end
 
 always @(*)begin
@@ -276,7 +278,7 @@ always @(*)begin
         
     end
     else if(reg1_reador_not==`False) begin
-        reg1_to_ex=immreg;
+        reg1_to_ex=`ZeroWorld;
         
     end
     else
@@ -295,7 +297,7 @@ always @(*)begin
         
     end
     else if(reg2_reador_not==`False) begin
-        reg2_to_ex=immreg;        
+        reg2_to_ex=`ZeroWorld;        
     end
     else
         begin

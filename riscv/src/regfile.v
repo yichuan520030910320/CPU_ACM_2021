@@ -23,8 +23,7 @@ always @(posedge clk_in ) begin
         if ((write_or_not==`Writeable)&&(writeaddr!=(5'h0))) begin
             regs[writeaddr]<=writedata;
         end
-    end
-    
+    end    
 end
 always @(*) begin
     if (rst_in==`RstEnable) begin
