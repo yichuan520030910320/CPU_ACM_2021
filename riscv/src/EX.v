@@ -13,7 +13,9 @@ module EX (
     output reg[`RegBus] rsd_data,
     output reg write_rsd_or_not,
     output reg branch_or_not,
-    output reg[`InstAddrBus] branch_address       
+    output reg[`InstAddrBus] branch_address,
+    output reg[`Dataaddress] mem_addr,
+    output reg mem_read_or_not      
 );
 always @(*) begin
     rsd_addr_to_write=5'h0;
@@ -21,6 +23,8 @@ always @(*) begin
     write_rsd_or_not=`False;
     branch_or_not=`False;
     branch_address=0;
+    mem_addr=`ZeroWorld;
+    mem_read_or_not=`False;
     
     if (rst_in==`RstEnable)begin
         
@@ -92,33 +96,131 @@ always @(*) begin
                 branch_address=pc_in+imm_in;                 
             end 
         end          
-        `CmdLB:          
-        `CmdLH:          
-        `CmdLW:          
-        `CmdLBU:          
-        `CmdLHU:          
-        `CmdSB:          
-        `CmdSH:          
-        `CmdSW:          
-        `CmdADDI:          
-        `CmdSLTI:          
-        `CmdSLTIU:          
-        `CmdXORI:          
-        `CmdORI:          
-        `CmdANDI:          
-        `CmdSLLI:          
-        `CmdSRLI:           
-        `CmdSRAI:          
-        `CmdADD:          
-        `CmdSUB:          
-        `CmdSLL:          
-        `CmdSLT:          
-        `CmdSLTU:          
-        `CmdXOR:          
-        `CmdSRL:          
-        `CmdSRA:          
-        `CmdOR:          
-        `CmdAND:          
+        `CmdLB,`CmdLH,`CmdLW,`CmdLBU,`CmdLHU:begin
+            mem_addr=reg1_to_ex+imm_in; 
+            mem_read_or_not=`True;            
+        end                                 
+        `CmdSB,          
+        `CmdSH,          
+        `CmdSW:begin
+            mem_addr=reg1_to_ex+imm_in;
+            mem_read_or_not=`True;            
+        end          
+        `CmdADDI:    begin
+            write_rsd_or_not=`True;
+            rsd_data=reg1_to_ex+imm_in;
+            
+        end      
+        `CmdSLTI:
+        begin
+            write_rsd_or_not=`True;
+            rsd_addr_to_write=rsd_to_ex;
+            rsd_data=0;            
+            if ($signed(reg1_to_ex)<$signed(imm_in)) begin
+                rsd_data=1;                
+            end            
+        end          
+        `CmdSLTIU:
+        begin
+            write_rsd_or_not=`True;
+            rsd_addr_to_write=rsd_to_ex;
+            rsd_data=0;            
+            if (reg1_to_ex<(imm_in)) begin
+                rsd_data=1;                
+            end            
+        end                  
+        `CmdXORI:begin
+            write_rsd_or_not=`True;
+            rsd_addr_to_write=rsd_to_ex;
+            rsd_data=reg1_to_ex^imm_in;            
+        end          
+        `CmdORI:begin
+            write_rsd_or_not=`True;
+            rsd_addr_to_write=rsd_to_ex;
+            rsd_data=reg1_to_ex|imm_in;            
+        end          
+        `CmdANDI:begin
+            write_rsd_or_not=`True;
+            rsd_addr_to_write=rsd_to_ex;
+            rsd_data=reg1_to_ex&imm_in;            
+        end                
+        `CmdSLLI:begin
+            write_rsd_or_not=`True;
+            rsd_addr_to_write=rsd_to_ex;
+            rsd_data=reg1_to_ex<<imm_in;            
+        end             
+        `CmdSRLI:begin
+            write_rsd_or_not=`True;
+            rsd_addr_to_write=rsd_to_ex;
+            rsd_data=reg1_to_ex>>imm_in[4:0];            
+        end            
+        `CmdSRAI:begin
+            write_rsd_or_not=`True;
+            rsd_addr_to_write=rsd_to_ex;
+            rsd_data=$signed(reg1_to_ex)>>imm_in[4:0];             
+        end          
+        `CmdADD: 
+        begin
+            write_rsd_or_not=`True;
+            rsd_addr_to_write=rsd_to_ex;
+            rsd_data=reg1_to_ex+reg2_to_ex;             
+        end            
+        `CmdSUB: begin
+            write_rsd_or_not=`True;
+            rsd_addr_to_write=rsd_to_ex;
+            rsd_data=reg1_to_ex-reg2_to_ex;             
+        end            
+        `CmdSLL:  begin
+            write_rsd_or_not=`True;
+            rsd_addr_to_write=rsd_to_ex;
+            rsd_data=reg1_to_ex<<reg2_to_ex;              
+        end           
+        `CmdSLT: begin
+            write_rsd_or_not=`True;
+            rsd_addr_to_write=rsd_to_ex;
+            rsd_data=0;
+            if ($signed(reg1_to_ex)<$signed(reg2_to_ex)) begin
+                rsd_data=1;
+            end            
+        end         
+        `CmdSLTU:
+        begin
+            write_rsd_or_not=`True;
+            rsd_addr_to_write=rsd_to_ex;
+            rsd_data=0;            
+            if (reg1_to_ex<reg2_to_ex) begin
+                rsd_data=1;                
+            end            
+        end                   
+        `CmdXOR: 
+        begin
+            write_rsd_or_not=`True;
+            rsd_addr_to_write=rsd_to_ex;
+            rsd_data=reg1_to_ex^reg2_to_ex;             
+        end          
+        `CmdSRL:begin
+            write_rsd_or_not=`True;
+            rsd_addr_to_write=rsd_to_ex;
+            rsd_data=reg1_to_ex>>reg2_to_ex[4:0];
+            
+        end          
+        `CmdSRA:  
+        begin
+            write_rsd_or_not=`True;
+            rsd_addr_to_write=rsd_to_ex;
+            rsd_data=$signed(reg1_to_ex)>>reg2_to_ex[4:0];
+            
+        end         
+        `CmdOR:begin
+            write_rsd_or_not=`True;
+            rsd_addr_to_write=rsd_to_ex;
+            rsd_data=reg1_to_ex|reg2_to_ex;             
+        end          
+        `CmdAND: begin
+            write_rsd_or_not=`True;
+            rsd_addr_to_write=rsd_to_ex;
+            rsd_data=reg1_to_ex&reg2_to_ex;             
+        end         
     endcase
 
     end

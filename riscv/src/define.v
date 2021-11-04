@@ -26,7 +26,8 @@
 
 //Rom Macro
 `define InstAddrBus 31:0// the width of Rom Address bus 
-`define InstDataBus 31:0// the width of Rom Data bus 
+`define InstDataBus 31:0// the width of Rom Data bus
+`define Dataaddress 31:0  
 
 
 //load from instruction

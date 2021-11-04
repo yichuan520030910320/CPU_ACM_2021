@@ -203,7 +203,7 @@ always @(*) begin
                             immreg={26'h0,input_instru[25:20]};
                             cmdtype_to_exe=`CmdSLLI;
                         end
-                        `FUN3SLLI:begin
+                        `FUN3SRLI:begin
                             immreg={26'h0,input_instru[25:20]};
                             case (fun7)
                                 `FUN7SRLI: cmdtype_to_exe=`FUN7SRLI;
