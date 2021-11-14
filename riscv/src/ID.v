@@ -7,7 +7,16 @@ module ID (
 
     input  wire[`RegBus] reg1_data,
     input wire[`RegBus] reg2_data,
-    
+
+    //forwarding
+    input  wire ex_forward_id_i,
+    input  wire[`RegBus] ex_forward_data_i,
+    input  wire[`RegAddrBus] ex_forward_addr_i, 
+
+    input  wire mem_forward_id_i,
+    input  wire[`RegBus] mem_forward_data_i,
+    input  wire[`RegAddrBus] mem_forward_addr_i, 
+        
     output reg reg1_reador_not,
     output reg  reg2_reador_not,
     output reg[`RegAddrBus] reg1addr,
@@ -267,11 +276,18 @@ always @(*) begin
         end
         immout=immreg;
 end
+//todo forwarding!
 
 always @(*)begin
-    if(rst_in==`RstEnable)begin
+    if(rst_in==`RstEnable||reg1addr==0)begin
         reg1_to_ex=`ZeroWorld;
         
+    end
+    else if(reg1_reador_not==`True&&ex_forward_id_i==`True&&ex_forward_addr_i==reg1addr) begin
+        reg1_to_ex=ex_forward_data_i;
+    end
+    else if(reg1_reador_not==`True&&mem_forward_id_i==`True&&mem_forward_addr_i==reg1addr) begin
+        reg1_to_ex=mem_forward_data_i;
     end
     else if(reg1_reador_not==`True) begin
         reg1_to_ex=reg1_data;
@@ -288,9 +304,14 @@ always @(*)begin
 end
 
 always @(*)begin
-    if(rst_in==`RstEnable)begin
-        reg2_to_ex=`ZeroWorld;
-        
+    if(rst_in==`RstEnable||reg2addr==0)begin
+        reg2_to_ex=`ZeroWorld;       
+    end
+    else if(reg2_reador_not==`True&&ex_forward_id_i==`True&&ex_forward_addr_i==reg2addr) begin
+        reg2_to_ex=ex_forward_data_i;
+    end
+    else if(reg2_reador_not==`True&&mem_forward_id_i==`True&&mem_forward_addr_i==reg2addr) begin
+        reg2_to_ex=mem_forward_data_i;
     end
     else if(reg2_reador_not==`True) begin
         reg2_to_ex=reg2_data;

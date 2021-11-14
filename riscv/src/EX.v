@@ -15,7 +15,11 @@ module EX (
     output reg branch_or_not,
     output reg[`InstAddrBus] branch_address,
     output reg[`Dataaddress] mem_addr,
-    output reg mem_read_or_not      
+    output reg mem_read_or_not    ,
+
+    output  reg ex_forward_id_o,
+    output  reg[`RegBus] ex_forward_data_o,
+    output  reg[`RegAddrBus] ex_forward_addr_o  
 );
 always @(*) begin
     rsd_addr_to_write=5'h0;
@@ -25,7 +29,9 @@ always @(*) begin
     branch_address=0;
     mem_addr=`ZeroWorld;
     mem_read_or_not=`False;
-    
+    ex_forward_id_o=`False;
+    ex_forward_addr_o=0;
+    ex_forward_data_o=0;    
     if (rst_in==`RstEnable)begin
         
     end
@@ -220,9 +226,18 @@ always @(*) begin
             write_rsd_or_not=`True;
             rsd_addr_to_write=rsd_to_ex;
             rsd_data=reg1_to_ex&reg2_to_ex;             
-        end         
+        end
+        default:begin
+            
+        end
+
     endcase
 
+    end
+    if (write_rsd_or_not==`True) begin
+        ex_forward_id_o=`True;
+        ex_forward_addr_o=rsd_to_ex;
+        ex_forward_data_o=rsd_data;        
     end
         
     

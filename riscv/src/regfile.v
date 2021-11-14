@@ -27,34 +27,34 @@ always @(posedge clk_in ) begin
 end
 always @(*) begin
     if (rst_in==`RstEnable) begin
-        read1data<=`ZeroWorld;
+        read1data=`ZeroWorld;
     end
     else if(write_or_not==`Writeable&&readaddr1==writeaddr&&read1_or_not==`Readable) begin
-        read1data<=writedata;
+        read1data=writedata;
     end
     else if(read1_or_not==`Readable) begin
-        read1data<=regs[readaddr1];
+        read1data=regs[readaddr1];
     end
     else
         begin
-            read1data<=`ZeroWorld;
+            read1data=`ZeroWorld;
         end
     
 end
 
 always @(*) begin
     if (rst_in==`RstEnable) begin
-        read1data<=`ZeroWorld;
+        read1data=`ZeroWorld;
     end
     else if(write_or_not==`Writeable&&readaddr2==writeaddr&&read2_or_not==`Readable) begin
-        read2data<=writedata;
+        read2data=writedata;
     end
     else if(read1_or_not==`Readable) begin
-        read2data<=regs[readaddr2];
+        read2data=regs[readaddr2];
     end
     else
         begin
-            read2data<=`ZeroWorld;
+            read2data=`ZeroWorld;
         end
     
 end

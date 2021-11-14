@@ -2,6 +2,9 @@
 module IF_ID (
     input  wire                 clk_in,
     input wire rst_in,
+    input  wire     rdy_in, 
+
+    input  wire[5:0] stall_in,
 
     input wire [`InstAddrBus] input_pc,
     input  wire[`InstDataBus] input_instru,
@@ -11,8 +14,14 @@ module IF_ID (
 );
 always @(posedge clk_in ) begin
     if (rst_in==`Rstdisable) begin
-        output_pc <=input_pc;
-        output_instru<=input_instru;
+        if (stall_in[1]==1&&stall_in[2]==0) begin
+            output_pc<=`ZeroWorld;
+            output_instru<=`ZeroWorld;
+        end else if(stall_in[1]==0&&rdy_in==1) begin
+            output_pc <=input_pc;
+            output_instru<=input_instru;
+        end  
+        //otherwise the Sequential circuit contain the original state     
     end
     else
         begin
