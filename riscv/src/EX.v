@@ -17,6 +17,8 @@ module EX (
     output reg[`Dataaddress] mem_addr,
     output reg mem_read_or_not    ,
 
+    
+
     output  reg ex_forward_id_o,
     output  reg[`RegBus] ex_forward_data_o,
     output  reg[`RegAddrBus] ex_forward_addr_o  

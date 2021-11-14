@@ -5,7 +5,7 @@ module ID_EX (
     input  wire     rdy_in, 
     input  wire[5:0] stall_in,
 
-
+    input  wire branch_or_not,
     input wire [`InstAddrBus] input_pc,
     input wire[`RegBus] reg1_from_id,
     input wire[`RegBus] reg2_from_id,
@@ -37,7 +37,16 @@ always @(posedge clk_in) begin
         imm_out<=`ZeroWorld;      
     end
     else begin
-        if(stall_in[2]==1&&stall_in[3]==0) begin
+        if (branch_or_not==1) begin
+        reg1_to_ex<=`ZeroWorld;
+        reg2_to_ex<=`ZeroWorld;
+        rsd_to_ex<=5'h0;
+        write_rsd_or_not_to_ex<=`False;
+        cmdtype_to_exe<=6'h0;
+        pc_out<=`ZeroWorld; 
+        imm_out<=`ZeroWorld;      
+        end
+        else if(stall_in[2]==1&&stall_in[3]==0) begin
         reg1_to_ex<=`ZeroWorld;
         reg2_to_ex<=`ZeroWorld;
         rsd_to_ex<=5'h0;

@@ -5,27 +5,23 @@ module pc (
     input  wire     rdy_in, 
     input  wire[5:0] stall_in,
 
-    output reg [`InstAddrBus]    pc_out,
-    output reg ce
+    input  wire branch_or_not,
+    input wire[31:0] branch_addr,
+
+    output reg [`InstAddrBus]    pc_out
+    
 );
+
 always @(posedge clk_in) begin
-    if (rst_in==`RstEnable ) begin
-        ce<=`ChipDisable;
-    end
-    else
-        begin
-            ce<=`ChipEnable;
+    if (!rst_in==1) begin
+        if (branch_or_not==1&&rdy_in==1) begin
+            pc_out=branch_addr;
         end
-end
-always @(posedge clk_in) begin
-    if (ce==`ChipEnable) begin
-        if(stall_in[0]==1&&rdy_in==1) begin
+        else if(stall_in[0]==1&&rdy_in==1) begin
             pc_out<=pc_out+4'h4;
         end
-        else begin
-            
-        end
-        
+        else begin           
+        end       
     end
     else
         begin

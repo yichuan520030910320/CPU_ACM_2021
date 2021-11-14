@@ -271,7 +271,7 @@ always @(*) begin
                 end
                 default: 
                 begin                    
-                end
+                end         
             endcase
         end
         immout=immreg;

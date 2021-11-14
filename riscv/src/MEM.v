@@ -11,11 +11,7 @@ module MEM (
     output reg out_write_or_not,
     output  reg mem_forward_id_o,
     output  reg[`RegBus] mem_forward_data_o,
-    output  reg[`RegAddrBus] mem_forward_addr_o  
-
-
-
-    
+    output  reg[`RegAddrBus] mem_forward_addr_o     
 );
 always @(*)begin
     out_rd_addr=0;
