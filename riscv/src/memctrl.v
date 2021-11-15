@@ -1,38 +1,27 @@
 `include "C:\Users\18303\Desktop\cpu\CPU_ACM_2021\riscv\src\define.v"
-module memctrl (
-    
+module memctrl (   
     input   wire    clk_in,
     input   wire    rst_in,
     input  wire     rdy_in, 
-
     //to mem and if 
     output  reg[1:0] mem_ctrl_busy_state,//[1] stand for the state of the if [0]stand for the state of the mem
-
-
     //to mem
     output reg mem_load_done,   
     output reg[31:0] mem_ctrl_load_to_mem,
-
     //from mem 
     input wire  read_mem,
     input wire write_mem,
     input  wire[31:0] mem_addr,
     input wire[31:0] mem_data_to_write,
     input  wire[2:0] data_len,
-
-
     //to if
     output reg if_load_done,
     output reg[31:0] mem_ctrl_instru_to_if,
-
     //from if
     input wire if_read_or_not,  
     input  wire[31:0] intru_addr,
-
-
     //from ram
     input wire  [7:0]           d_in    , // data input
-
     //to ram
     output  wire                   r_or_w,  // read/write select (read: 1, write: 0)
     output  wire[15:0]             a_out,     // memory address

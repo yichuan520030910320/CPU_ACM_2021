@@ -1,9 +1,13 @@
 module stallctrl (
+    //from if
     input  wire stall_from_if,
+    //from id
     input wire stall_from_id,
+    //from ex
     input wire stall_from_ex,
+    //from mem
     input wire stall_from_mem,
-
+    //to pc id_id id_ex ex_mem mem_wb
     output reg[5:0] stall//stall[0] stand for pc stop 1stand for stop
 );
 

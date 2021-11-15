@@ -3,15 +3,15 @@ module IF_ID (
     input  wire                 clk_in,
     input wire rst_in,
     input  wire     rdy_in, 
-
+    //from stall ctrl
     input  wire[5:0] stall_in,
-
+    //from ex
     input  wire branch_or_not,
 
-
+    //from if
     input wire [`InstAddrBus] input_pc,
     input  wire[`InstDataBus] input_instru,
-
+    //to id
     output reg[`InstAddrBus] output_pc,
     output reg[`InstDataBus] output_instru 
 );

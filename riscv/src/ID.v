@@ -1,39 +1,36 @@
 `include "C:\Users\18303\Desktop\cpu\CPU_ACM_2021\riscv\src\define.v"
 module ID (
     input  wire rst_in,
-
+    //from if_id
     input wire[`InstAddrBus] input_pc,
     input wire[`InstDataBus] input_instru,
-
+    //from regfile
     input  wire[`RegBus] reg1_data,
     input wire[`RegBus] reg2_data,
-
-    //forwarding
+    //forwarding from ex
     input  wire isloading_ex,
     input  wire ex_forward_id_i,
     input  wire[`RegBus] ex_forward_data_i,
     input  wire[`RegAddrBus] ex_forward_addr_i, 
-
+    //forwarding from mem
     input  wire mem_forward_id_i,
     input  wire[`RegBus] mem_forward_data_i,
     input  wire[`RegAddrBus] mem_forward_addr_i, 
-        
+    //to regfile       
     output reg reg1_reador_not,
     output reg  reg2_reador_not,
     output reg[`RegAddrBus] reg1addr,
     output reg[`RegAddrBus] reg2addr,
-
+    //to id_ex
     output reg[`RegBus] reg1_to_ex,
     output reg[`RegBus] reg2_to_ex,
     output reg[`RegAddrBus] rsd_to_ex,
     output reg write_rsd_or_not,
     output reg[`Cmd_Typebus] cmdtype_to_exe,
     output reg[`Immbus] immout,
-
-    output wire stallfrom_ex,
-    
-    output reg[`InstAddrBus] pc_out   
-    
+    output reg[`InstAddrBus] pc_out  ,
+    //to stall ctrl
+    output wire stallfrom_ex  
 );
 
 wire opcode=input_instru[6:0];
@@ -353,7 +350,6 @@ always @(*)begin
         begin
         reg2_to_ex=`ZeroWorld;
         stall2=0;   
-
         end
 end
 assign stallfrom_ex=stall1|stall2; 

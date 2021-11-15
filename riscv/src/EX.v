@@ -1,5 +1,6 @@
 `include "C:\Users\18303\Desktop\cpu\CPU_ACM_2021\riscv\src\define.v"
 module EX (
+    //from id_ex
     input  wire rst_in, 
     input wire[`RegBus] reg1_to_ex,
     input wire[`RegBus] reg2_to_ex,
@@ -8,7 +9,7 @@ module EX (
     input wire[`Cmd_Typebus] cmdtype_to_exe,    
     input wire[`InstAddrBus] pc_in,
     input  wire[`Immbus] imm_in,
-
+    //to ex_mem
     output reg[`RegAddrBus] rsd_addr_to_write,
     output reg[`RegBus] rsd_data,
     output reg write_rsd_or_not,
@@ -17,11 +18,7 @@ module EX (
     output reg[`Dataaddress] mem_addr,
     output reg mem_read_or_not,
     output reg[`Cmd_Typebus] cmdtype_out,  
-
-
-    
-
-//forward
+    //forward to id
     output  reg isloading_ex,
     output  reg ex_forward_id_o,
     output  reg[`RegBus] ex_forward_data_o,

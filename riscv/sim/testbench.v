@@ -1,6 +1,6 @@
 // testbench top module file
 // for simulation only
-
+`include"C:\Users\18303\Desktop\cpu\CPU_ACM_2021\riscv\src\riscv_top.v"
 `timescale 1ns/1ps
 module testbench;
 

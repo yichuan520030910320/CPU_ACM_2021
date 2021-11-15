@@ -3,8 +3,9 @@ module ID_EX (
     input   wire    clk_in,
     input   wire    rst_in,
     input  wire     rdy_in, 
+    //from stallctrl
     input  wire[5:0] stall_in,
-
+    //from id
     input  wire branch_or_not,
     input wire [`InstAddrBus] input_pc,
     input wire[`RegBus] reg1_from_id,
@@ -14,8 +15,7 @@ module ID_EX (
     input wire[`Cmd_Typebus] cmdtype_from_id,
     input wire[`InstAddrBus] pc_in,
     input wire[`Immbus] imm_in,
-
-
+    //to ex
     output reg[`RegBus] reg1_to_ex,
     output reg[`RegBus] reg2_to_ex,
     output reg[`RegAddrBus] rsd_to_ex,
@@ -23,7 +23,6 @@ module ID_EX (
     output reg[`Cmd_Typebus] cmdtype_to_exe,    
     output reg[`InstAddrBus] pc_out,
     output  reg[`Immbus] imm_out
-
 );
 
 always @(posedge clk_in) begin

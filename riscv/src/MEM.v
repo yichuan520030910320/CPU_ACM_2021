@@ -1,7 +1,7 @@
 `include "C:\Users\18303\Desktop\cpu\CPU_ACM_2021\riscv\src\define.v"
 module MEM (
     input  wire rst_in,
-
+    //from ex_mem
     input wire [`RegAddrBus] input_rd_addr,
     input wire [`RegBus] input_rd_data,
     input  wire write_or_not,
@@ -9,12 +9,12 @@ module MEM (
     input wire[`Dataaddress] mem_addr,
     input wire mem_read_or_not,   
 
-
+    //to mem_wb
     output reg [`RegAddrBus] out_rd_addr,
     output reg [`RegBus] out_rd_data,
     output reg out_write_or_not,
 
-    //forward
+    //forward to id
     output  reg mem_forward_id_o,
     output  reg[`RegBus] mem_forward_data_o,
     output  reg[`RegAddrBus] mem_forward_addr_o    ,

@@ -3,14 +3,13 @@ module MEM_WB (
     input   wire    clk_in,
     input   wire    rst_in,
     input  wire     rdy_in, 
-
+    //from stall ctrl
     input  wire[5:0] stall_in,
-
-
+    //from mem
     input wire [`RegAddrBus] mem_reg_addr,
     input wire [`RegBus] mem_reg_data,
     input  wire if_write,
-
+    //to regfile
     output reg[`RegAddrBus] mem_reg_addr_out, 
     output reg [`RegBus] mem_reg_data_out,
     output  reg if_write_out

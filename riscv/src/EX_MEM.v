@@ -3,10 +3,10 @@ module EX_MEM (
     input   wire    clk_in,
     input   wire    rst_in,
     input  wire     rdy_in, 
-
+    //from stall ctrl
     input  wire[5:0] stall_in,
 
-
+    //from ex
     input wire[`RegAddrBus] rsd_addr_to_write,
     input wire[`RegBus] rsd_data,
     input wire write_rsd_or_not,
@@ -15,7 +15,7 @@ module EX_MEM (
     input wire[`Dataaddress] mem_addr,
     input wire mem_read_or_not,
     input wire[`Cmd_Typebus] cmdtype,    
-
+    //to mem
     output reg[`Cmd_Typebus] cmdtype_out,    
     output reg[`RegAddrBus] rsd_addr_out,
     output reg[`RegBus] rsd_data_out,

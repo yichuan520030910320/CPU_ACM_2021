@@ -3,11 +3,12 @@ module pc (
     input  wire     clk_in,
     input  wire     rst_in,
     input  wire     rdy_in, 
+    //from stall ctrl
     input  wire[5:0] stall_in,
-
+    //from ex
     input  wire branch_or_not,
     input wire[31:0] branch_addr,
-
+    //to if
     output reg [`InstAddrBus]    pc_out
     
 );

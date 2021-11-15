@@ -3,15 +3,15 @@ module regfile (
     input  wire clk_in,
     input wire rst_in,
 
-
+    //from mem_wb
     input  wire write_or_not,
     input wire[`RegAddrBus] writeaddr,
     input wire[`RegBus] writedata,
-
+    //from id
     input  wire read1_or_not,
     input  wire[`RegAddrBus] readaddr1,
     output  reg[`RegBus] read1data,
-
+    //from id
     input  wire read2_or_not,
     input  wire[`RegAddrBus] readaddr2,
     output  reg[`RegBus] read2data
