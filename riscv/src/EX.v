@@ -16,10 +16,13 @@ module EX (
     output reg[`InstAddrBus] branch_address,
     output reg[`Dataaddress] mem_addr,
     output reg mem_read_or_not,
-    output reg[`Cmd_Typebus] cmdtype_out,    
+    output reg[`Cmd_Typebus] cmdtype_out,  
 
 
+    
 
+//forward
+    output  reg isloading_ex,
     output  reg ex_forward_id_o,
     output  reg[`RegBus] ex_forward_data_o,
     output  reg[`RegAddrBus] ex_forward_addr_o  
@@ -33,6 +36,7 @@ always @(*) begin
     mem_addr=`ZeroWorld;
     mem_read_or_not=`False;
     ex_forward_id_o=`False;
+    isloading_ex=0;
     ex_forward_addr_o=0;
     ex_forward_data_o=0;  
     cmdtype_out=cmdtype_to_exe;  
@@ -238,7 +242,11 @@ always @(*) begin
     endcase
 
     end
+
     if (write_rsd_or_not==`True) begin
+        if (cmdtype_to_exe==`CmdLB||cmdtype_to_exe==`CmdLH||cmdtype_to_exe==`CmdLW||cmdtype_to_exe==`CmdLBU||cmdtype_to_exe==`CmdLHU) begin
+            isloading_ex=1;
+        end
         ex_forward_id_o=`True;
         ex_forward_addr_o=rsd_to_ex;
         ex_forward_data_o=rsd_data;        

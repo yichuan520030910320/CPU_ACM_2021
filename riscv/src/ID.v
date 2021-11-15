@@ -9,6 +9,7 @@ module ID (
     input wire[`RegBus] reg2_data,
 
     //forwarding
+    input  wire isloading_ex,
     input  wire ex_forward_id_i,
     input  wire[`RegBus] ex_forward_data_i,
     input  wire[`RegAddrBus] ex_forward_addr_i, 
@@ -28,6 +29,8 @@ module ID (
     output reg write_rsd_or_not,
     output reg[`Cmd_Typebus] cmdtype_to_exe,
     output reg[`Immbus] immout,
+
+    output wire stallfrom_ex,
     
     output reg[`InstAddrBus] pc_out   
     
@@ -46,6 +49,7 @@ reg instruvalid;//record if the instruct is valid
 
 
 always @(*) begin
+        
         reg1_reador_not=`False;
         reg2_reador_not=`False;
         reg1addr=5'b00000;
@@ -278,55 +282,81 @@ always @(*) begin
         end
         immout=immreg;
 end
-//todo forwarding!
+reg stall1,stall2;
 
 always @(*)begin
     if(rst_in==`RstEnable||reg1addr==0)begin
         reg1_to_ex=`ZeroWorld;
+        stall1=0;
         
+    end
+    else if(isloading_ex==1&&reg1_reador_not==`True&&ex_forward_id_i==`True&&ex_forward_addr_i==reg1addr) begin
+        stall1=1;
+        reg1_to_ex=0;
     end
     else if(reg1_reador_not==`True&&ex_forward_id_i==`True&&ex_forward_addr_i==reg1addr) begin
         reg1_to_ex=ex_forward_data_i;
+        stall1=0;
+
     end
     else if(reg1_reador_not==`True&&mem_forward_id_i==`True&&mem_forward_addr_i==reg1addr) begin
         reg1_to_ex=mem_forward_data_i;
+        stall1=0;
+
     end
     else if(reg1_reador_not==`True) begin
         reg1_to_ex=reg1_data;
+        stall1=0;
         
     end
     else if(reg1_reador_not==`False) begin
         reg1_to_ex=`ZeroWorld;
+        stall1=0;
+
         
     end
     else
         begin
+        stall1=0;   
             reg1_to_ex=`ZeroWorld;            
         end
 end
 
 always @(*)begin
     if(rst_in==`RstEnable||reg2addr==0)begin
-        reg2_to_ex=`ZeroWorld;       
+        reg2_to_ex=`ZeroWorld;    
+        stall2=0;   
+    end
+    else if(isloading_ex==1&&reg2_reador_not==`True&&ex_forward_id_i==`True&&ex_forward_addr_i==reg2addr) begin
+        stall2=1;
+        reg2_to_ex=0;
     end
     else if(reg2_reador_not==`True&&ex_forward_id_i==`True&&ex_forward_addr_i==reg2addr) begin
         reg2_to_ex=ex_forward_data_i;
+        stall2=0;   
+
     end
     else if(reg2_reador_not==`True&&mem_forward_id_i==`True&&mem_forward_addr_i==reg2addr) begin
+        stall2=0;   
         reg2_to_ex=mem_forward_data_i;
     end
     else if(reg2_reador_not==`True) begin
+        stall2=0;   
         reg2_to_ex=reg2_data;
         
     end
     else if(reg2_reador_not==`False) begin
+        stall2=0;   
         reg2_to_ex=`ZeroWorld;        
     end
     else
         begin
-            reg2_to_ex=`ZeroWorld;            
+        reg2_to_ex=`ZeroWorld;
+        stall2=0;   
+
         end
 end
+assign stallfrom_ex=stall1|stall2; 
 
 
 endmodule //ID
