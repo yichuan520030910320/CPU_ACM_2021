@@ -14,7 +14,9 @@ module EX_MEM (
     input wire[`InstAddrBus] branch_address,
     input wire[`Dataaddress] mem_addr,
     input wire mem_read_or_not,
+    input wire[`Cmd_Typebus] cmdtype,    
 
+    output reg[`Cmd_Typebus] cmdtype_out,    
     output reg[`RegAddrBus] rsd_addr_out,
     output reg[`RegBus] rsd_data_out,
     output reg write_rsd_or_not_out,
@@ -25,35 +27,36 @@ module EX_MEM (
 );
 
 always @(posedge clk_in) begin
+    cmdtype_out<=cmdtype;
     if (rst_in==`RstEnable) begin
-        rsd_addr_out=`ZeroWorld;
-        rsd_data_out=`ZeroWorld;
-        write_rsd_or_not_out=`False;
-        branch_or_not_out=`False;
-        branch_address_out=`ZeroWorld;
-        mem_addr_out=`ZeroWorld;
-        mem_read_or_not_out=`False;
+        rsd_addr_out<=`ZeroWorld;
+        rsd_data_out<=`ZeroWorld;
+        write_rsd_or_not_out<=`False;
+        branch_or_not_out<=`False;
+        branch_address_out<=`ZeroWorld;
+        mem_addr_out<=`ZeroWorld;
+        mem_read_or_not_out<=`False;
     end
     else
         begin
             if(stall_in[3]==1&&stall_in[4]==0) begin
-                rsd_addr_out=`ZeroWorld;
-                rsd_data_out=`ZeroWorld;
-                write_rsd_or_not_out=`False;
-                branch_or_not_out=`False;
-                branch_address_out=`ZeroWorld;
-                mem_addr_out=`ZeroWorld;
-                mem_read_or_not_out=`False;                
+                rsd_addr_out<=`ZeroWorld;
+                rsd_data_out<=`ZeroWorld;
+                write_rsd_or_not_out<=`False;
+                branch_or_not_out<=`False;
+                branch_address_out<=`ZeroWorld;
+                mem_addr_out<=`ZeroWorld;
+                mem_read_or_not_out<=`False;                
             end
             else if(stall_in[3]==0&&rdy_in==1)
             begin
-                rsd_addr_out=rsd_addr_to_write;
-                rsd_data_out=rsd_data;
-                write_rsd_or_not_out=write_rsd_or_not;
-                branch_or_not_out=branch_or_not;
-                branch_address_out=branch_address;
-                mem_addr_out=mem_addr;
-                mem_read_or_not_out=mem_read_or_not;      
+                rsd_addr_out<=rsd_addr_to_write;
+                rsd_data_out<=rsd_data;
+                write_rsd_or_not_out<=write_rsd_or_not;
+                branch_or_not_out<=branch_or_not;
+                branch_address_out<=branch_address;
+                mem_addr_out<=mem_addr;
+                mem_read_or_not_out<=mem_read_or_not;      
             end               
         end    
 end

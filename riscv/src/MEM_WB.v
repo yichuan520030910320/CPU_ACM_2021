@@ -18,20 +18,20 @@ module MEM_WB (
 );
 always @(posedge clk_in) begin
     if(rst_in==`RstEnable) begin
-        mem_reg_addr_out=`ZeroWorld;
-        mem_reg_addr_out=`ZeroWorld;
-        if_write_out=`False;       
+        mem_reg_addr_out<=`ZeroWorld;
+        mem_reg_addr_out<=`ZeroWorld;
+        if_write_out<=`False;       
     end
     else begin
         if(stall_in[4]==1&&stall_in[5]==0) begin          
-        mem_reg_addr_out=`ZeroWorld;
-        mem_reg_addr_out=`ZeroWorld;
-        if_write_out=`False; 
+        mem_reg_addr_out<=`ZeroWorld;
+        mem_reg_addr_out<=`ZeroWorld;
+        if_write_out<=`False; 
         end
         else if(stall_in[3]==0&&rdy_in==1) begin
-        mem_reg_addr_out=mem_reg_addr;
-        mem_reg_addr_out=mem_reg_data;
-        if_write_out=if_write;
+        mem_reg_addr_out<=mem_reg_addr;
+        mem_reg_addr_out<=mem_reg_data;
+        if_write_out<=if_write;
         end                 
     end    
 end

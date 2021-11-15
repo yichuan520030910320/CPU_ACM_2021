@@ -43,6 +43,8 @@ reg instruvalid;//record if the instruct is valid
 
 
 
+
+
 always @(*) begin
         reg1_reador_not=`False;
         reg2_reador_not=`False;

@@ -21,7 +21,7 @@ module ID_EX (
     output reg[`RegAddrBus] rsd_to_ex,
     output reg write_rsd_or_not_to_ex,
     output reg[`Cmd_Typebus] cmdtype_to_exe,    
-    output reg[`InstAddrBus] pc_out   ,
+    output reg[`InstAddrBus] pc_out,
     output  reg[`Immbus] imm_out
 
 );

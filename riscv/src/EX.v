@@ -15,9 +15,10 @@ module EX (
     output reg branch_or_not,
     output reg[`InstAddrBus] branch_address,
     output reg[`Dataaddress] mem_addr,
-    output reg mem_read_or_not    ,
+    output reg mem_read_or_not,
+    output reg[`Cmd_Typebus] cmdtype_out,    
 
-    
+
 
     output  reg ex_forward_id_o,
     output  reg[`RegBus] ex_forward_data_o,
@@ -33,7 +34,8 @@ always @(*) begin
     mem_read_or_not=`False;
     ex_forward_id_o=`False;
     ex_forward_addr_o=0;
-    ex_forward_data_o=0;    
+    ex_forward_data_o=0;  
+    cmdtype_out=cmdtype_to_exe;  
     if (rst_in==`RstEnable)begin
         
     end

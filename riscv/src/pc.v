@@ -15,7 +15,7 @@ module pc (
 always @(posedge clk_in) begin
     if (!rst_in==1) begin
         if (branch_or_not==1&&rdy_in==1) begin
-            pc_out=branch_addr;
+            pc_out<=branch_addr;
         end
         else if(stall_in[0]==1&&rdy_in==1) begin
             pc_out<=pc_out+4'h4;
