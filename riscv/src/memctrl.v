@@ -23,7 +23,7 @@ module memctrl (
     //from ram
     input wire  [7:0]           d_in    , // data input
     //to ram
-    output  wire                   r_or_w,  // read/write select (read: 1, write: 0)
+    output  wire                   r_or_w,  // read/write select (read: 0, write: 1)
     output  wire[31:0]             a_out,     // memory address
     output  wire[7:0]              d_out     // data output    
 );
@@ -52,7 +52,7 @@ wire[31:0] nowaddr=(read_mem||write_mem) ? mem_addr:intru_addr;
 wire[2:0] select_cnt=(!read_mem)?(write_mem ? mem_write_cnt :if_read_cnt):(mem_read_cnt);
 
 //select the read or write state
-assign r_or_w=(!read_mem)?(write_mem ? 0 :1):(1);
+assign r_or_w=(!read_mem)?(write_mem ? 1:0):(0);
 
 //assign the addr to ram eventually
 assign a_out=nowaddr+select_cnt;

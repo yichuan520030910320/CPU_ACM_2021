@@ -3,20 +3,16 @@
 module regfile (
     input  wire clk_in,
     input wire rst_in,
-
     //from mem_wb
     input  wire write_or_not,
     input wire[4:0] writeaddr,
-    input wire[31:0] writedata,
-    
+    input wire[31:0] writedata,  
     input  wire read1_or_not,
     input  wire[4:0] readaddr1,
-    output  reg[31:0] read1data,
-    
+    output  reg[31:0] read1data,   
     input  wire read2_or_not,
     input  wire[4:0] readaddr2,
     output  reg[31:0] read2data
-
 );
 integer  i;
 reg [31:0]regs [0:31];
@@ -28,7 +24,7 @@ always @(posedge clk_in ) begin
     end    
     else 
     begin
-for (i=0; i<32;i=i+1) regs[i]<=0;
+        for (i=0; i<32;i=i+1) regs[i]<=0;
         end
 end
 always @(*) begin
