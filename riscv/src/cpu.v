@@ -257,7 +257,6 @@ EX ex_ (
     .branch_address(branch_out_addr),
     //to ex_mem
     .mem_addr(ex_mem_addr_),
-    .mem_read_or_not(ex_mem_read_or_not),
     .cmdtype_out(ex_cmd_type_),  
     //forward to id
     .isloading_ex(isloading_ex),
@@ -285,15 +284,15 @@ EX_MEM ex_mem_ (
     .rsd_data(ex_rsd_data_),
     .write_rsd_or_not(ex_write_or_not),
     .mem_addr(ex_mem_addr_),
-    .mem_read_or_not(ex_mem_read_or_not),
+
     .cmdtype(ex_cmd_type_),    
     //to mem
     .cmdtype_out(cmdtype_to_mem),    
     .rsd_addr_out(rsd_addr_out_to_mem),
     .rsd_data_out(rsd_data_out_to_mem),
     .write_rsd_or_not_out(write_rsd_or_not_to_mem),
-    .mem_addr_out(mem_addr_out_mem),
-    .mem_read_or_not_out(mem_read_or_not_tomem)
+    .mem_addr_out(mem_addr_out_mem)
+
 );
 //mem to mem_wb
 wire[4:0] rsd_addr_from_mem;
@@ -315,7 +314,7 @@ MEM mem_ (
     .write_or_not(write_rsd_or_not_to_mem),
     .cmdtype(cmdtype_to_mem), 
     .mem_addr(mem_addr_out_mem),
-    .mem_read_or_not(mem_read_or_not_tomem),   
+  
 
     //to mem_wb
     .out_rd_addr(rsd_addr_from_mem),

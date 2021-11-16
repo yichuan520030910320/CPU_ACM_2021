@@ -1,4 +1,3 @@
-`include "/mnt/c/Users/18303/Desktop/cpu/CPU_ACM_2021/riscv/src/define.v"
 
 module memctrl (   
     input   wire    clk_in,
@@ -84,16 +83,16 @@ always @(posedge clk_in) begin
                 mem_ctrl_load_to_mem<=0;
                 case (mem_read_cnt)
                     1:begin
-                        mem_read_data[7:0]=d_in;                       
+                        mem_read_data[7:0]<=d_in;                       
                     end
                     2:begin
-                        mem_read_data[15:8]=d_in;                        
+                        mem_read_data[15:8]<=d_in;                        
                     end
                     3:begin
-                        mem_read_data[23:16]=d_in;                        
+                        mem_read_data[23:16]<=d_in;                        
                     end
                     4: begin
-                        mem_read_data[31:24]=d_in;                       
+                        mem_read_data[31:24]<=d_in;                       
                     end
                     default: begin                       
                     end
@@ -102,7 +101,6 @@ always @(posedge clk_in) begin
                     mem_ctrl_busy_state<=0;
                     mem_load_done<=1;
                     mem_read_cnt<=0;
-                    mem_ctrl_busy_state<=2'b00;
                     mem_ctrl_load_to_mem<=mem_read_data;
                     mem_read_data<=0;
                 end else
@@ -117,11 +115,9 @@ always @(posedge clk_in) begin
                     mem_ctrl_busy_state<=0;
                     mem_load_done<=1;
                     mem_write_cnt<=0;
-                    mem_ctrl_busy_state<=2'b00;
-                    
                 end else
                     begin
-                        mem_write_cnt<=mem_read_cnt+1;                       
+                        mem_write_cnt<=mem_write_cnt+1;                       
                     end                   
             end else if(if_read_or_not==1)begin
                 if (preaddr!=intru_addr) begin
@@ -134,19 +130,18 @@ always @(posedge clk_in) begin
                 mem_ctrl_load_to_mem<=0;
                 case (if_read_cnt)
                     1:begin
-                        if_read_instru[7:0]=d_in;                       
+                        if_read_instru[7:0]<=d_in;                       
                     end
                     2:begin
-                        if_read_instru[15:8]=d_in;                        
+                        if_read_instru[15:8]<=d_in;                        
                     end
                     3:begin
-                        if_read_instru[23:16]=d_in;                        
+                        if_read_instru[23:16]<=d_in;                        
                     end
                     4: begin
-                        if_read_instru[31:24]=d_in;                       
+                        if_read_instru[31:24]<=d_in;                       
                     end
-                    default: begin
-                        
+                    default: begin                      
                     end
                 endcase
                 if (if_read_cnt==4) begin

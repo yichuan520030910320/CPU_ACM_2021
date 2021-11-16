@@ -3,20 +3,20 @@
 module ID (
     input  wire rst_in,
     //from if_id
-    input wire[`InstAddrBus] input_pc,
-    input wire[`InstDataBus] input_instru,
+    input wire[31:0] input_pc,
+    input wire[31:0] input_instru,
     //from regfile
-    input  wire[`RegBus] reg1_data,
-    input wire[`RegBus] reg2_data,
+    input  wire[31:0] reg1_data,
+    input wire[31:0] reg2_data,
     //forwarding from ex
     input  wire isloading_ex,
     input  wire ex_forward_id_i,
-    input  wire[`RegBus] ex_forward_data_i,
-    input  wire[`RegAddrBus] ex_forward_addr_i, 
+    input  wire[31:0] ex_forward_data_i,
+    input  wire[4:0] ex_forward_addr_i, 
     //forwarding from mem
     input  wire mem_forward_id_i,
-    input  wire[`RegBus] mem_forward_data_i,
-    input  wire[`RegAddrBus] mem_forward_addr_i, 
+    input  wire[31:0] mem_forward_data_i,
+    input  wire[4:0] mem_forward_addr_i, 
     //to regfile       
     output reg reg1_reador_not,
     output reg  reg2_reador_not,
@@ -54,10 +54,10 @@ always @(*) begin
         reg2addr=5'b00000;
         reg1_to_ex=`ZeroWorld;
         reg2_to_ex=`ZeroWorld;
-        rsd_to_ex=`ZeroWorld;
+        rsd_to_ex=0;
         write_rsd_or_not=`False;
         cmdtype_to_exe=6'b000000;
-        immreg=`ZeroWorld;
+        immout=0;
         immreg=`ZeroWorld;        
         pc_out=`ZeroWorld;
     if (rst_in==`RstEnable) begin        
@@ -88,6 +88,8 @@ always @(*) begin
                 end
                 `OP_JALR:
                 begin
+                    reg1_reador_not=1;
+                    reg1addr=input_instru[`Rs1range];
                     immreg={{21{input_instru[31]}},input_instru[30:20]};
                     write_rsd_or_not=`True;
                     cmdtype_to_exe=`CmdJALR;
@@ -96,7 +98,7 @@ always @(*) begin
                 end
                 `OP_BRANCH:
                 begin
-                    immreg={{12{input_instru[31]}},input_instru[7],input_instru[30:25],input_instru[11:8],1'b0};
+                    immreg={{20{input_instru[31]}},input_instru[7],input_instru[30:25],input_instru[11:8],1'b0};
                     reg1_reador_not=`True;
                     reg2_reador_not=`True;
                     reg1addr=input_instru[`Rs1range];
@@ -203,15 +205,6 @@ always @(*) begin
                         `FUN3ANDI:begin
                             cmdtype_to_exe=`CmdANDI;
                         end
-                        `FUN3ANDI:begin
-                            cmdtype_to_exe=`CmdANDI;
-                        end
-                        `FUN3ANDI:begin
-                            cmdtype_to_exe=`CmdANDI;
-                        end
-                        `FUN3ANDI:begin
-                            cmdtype_to_exe=`CmdANDI;
-                        end
                         `FUN3SLLI:begin
                             immreg={26'h0,input_instru[25:20]};
                             cmdtype_to_exe=`CmdSLLI;
@@ -245,6 +238,10 @@ always @(*) begin
                             default: ;
                         endcase
                     end
+                    `FUN3SLL:
+                    begin
+                        cmdtype_to_exe=`CmdSLL;
+                    end
                     `FUN3SLT:begin
                         cmdtype_to_exe=`CmdSLT;
                         
@@ -265,8 +262,8 @@ always @(*) begin
                     end
                     'h5:begin
                         case (fun7)
-                            `FUN7ADD: cmdtype_to_exe=`CmdSRL;
-                            `FUN7SUB:cmdtype_to_exe=`CmdSRA;
+                            `FUN7SRL: cmdtype_to_exe=`CmdSRL;
+                            `FUN7SRA:cmdtype_to_exe=`CmdSRA;
                             default: ;
                         endcase
                     end
@@ -316,7 +313,7 @@ always @(*)begin
     else
         begin
         stall1=0;   
-            reg1_to_ex=`ZeroWorld;            
+        reg1_to_ex=`ZeroWorld;            
         end
 end
 

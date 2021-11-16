@@ -12,15 +12,15 @@ module EX_MEM (
     input wire[`RegBus] rsd_data,
     input wire write_rsd_or_not,
     input wire[`Dataaddress] mem_addr,
-    input wire mem_read_or_not,
+
     input wire[`Cmd_Typebus] cmdtype,    
     //to mem
     output reg[`Cmd_Typebus] cmdtype_out,    
     output reg[`RegAddrBus] rsd_addr_out,
     output reg[`RegBus] rsd_data_out,
     output reg write_rsd_or_not_out,
-    output reg[`Dataaddress] mem_addr_out,
-    output reg mem_read_or_not_out   
+    output reg[`Dataaddress] mem_addr_out
+
 );
 
 always @(posedge clk_in) begin
@@ -30,7 +30,7 @@ always @(posedge clk_in) begin
         rsd_data_out<=`ZeroWorld;
         write_rsd_or_not_out<=`False;
         mem_addr_out<=`ZeroWorld;
-        mem_read_or_not_out<=`False;
+
     end
     else
         begin
@@ -39,7 +39,6 @@ always @(posedge clk_in) begin
                 rsd_data_out<=`ZeroWorld;
                 write_rsd_or_not_out<=`False;
                 mem_addr_out<=`ZeroWorld;
-                mem_read_or_not_out<=`False;                
             end
             else if(stall_in[3]==0&&rdy_in==1)
             begin
@@ -47,7 +46,6 @@ always @(posedge clk_in) begin
                 rsd_data_out<=rsd_data;
                 write_rsd_or_not_out<=write_rsd_or_not;
                 mem_addr_out<=mem_addr;
-                mem_read_or_not_out<=mem_read_or_not;      
             end               
         end    
 end

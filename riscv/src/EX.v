@@ -1,5 +1,4 @@
 `include "/mnt/c/Users/18303/Desktop/cpu/CPU_ACM_2021/riscv/src/define.v"
-
 module EX (
     //from id_ex
     input  wire rst_in, 
@@ -17,7 +16,6 @@ module EX (
     output reg branch_or_not,
     output reg[`InstAddrBus] branch_address,
     output reg[`Dataaddress] mem_addr,
-    output reg mem_read_or_not,
     output reg[`Cmd_Typebus] cmdtype_out,  
     //forward to id
     output  reg isloading_ex,
@@ -32,7 +30,6 @@ always @(*) begin
     branch_or_not=`False;
     branch_address=0;
     mem_addr=`ZeroWorld;
-    mem_read_or_not=`False;
     ex_forward_id_o=`False;
     isloading_ex=0;
     ex_forward_addr_o=0;
@@ -109,14 +106,12 @@ always @(*) begin
             end 
         end          
         `CmdLB,`CmdLH,`CmdLW,`CmdLBU,`CmdLHU:begin
-            mem_addr=reg1_to_ex+imm_in; 
-            mem_read_or_not=`True;            
+            mem_addr=reg1_to_ex+imm_in;            
         end                                 
         `CmdSB,          
         `CmdSH,          
         `CmdSW:begin
-            mem_addr=reg1_to_ex+imm_in;
-            mem_read_or_not=`True;            
+            mem_addr=reg1_to_ex+imm_in;           
         end          
         `CmdADDI:    begin
             write_rsd_or_not=`True;

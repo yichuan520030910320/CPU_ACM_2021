@@ -8,7 +8,6 @@ module MEM (
     input  wire write_or_not,
     input wire[`Cmd_Typebus] cmdtype, 
     input wire[`Dataaddress] mem_addr,
-    input wire mem_read_or_not,   
 
     //to mem_wb
     output reg [`RegAddrBus] out_rd_addr,

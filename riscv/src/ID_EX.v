@@ -1,23 +1,23 @@
 `include "/mnt/c/Users/18303/Desktop/cpu/CPU_ACM_2021/riscv/src/define.v"
-
 module ID_EX (
     input   wire    clk_in,
     input   wire    rst_in,
     input  wire     rdy_in, 
     //from stallctrl
     input  wire[5:0] stall_in,
-    //from id
+
     input  wire branch_or_not,
-    input wire[`RegBus] reg1_from_id,
-    input wire[`RegBus] reg2_from_id,
+        //from id
+    input wire[31:0] reg1_from_id,
+    input wire[31:0] reg2_from_id,
     input wire[`RegAddrBus] rsd_from_id,
     input wire write_rsd_or_not_from_id,
     input wire[`Cmd_Typebus] cmdtype_from_id,
     input wire[`InstAddrBus] pc_in,
     input wire[`Immbus] imm_in,
     //to ex
-    output reg[`RegBus] reg1_to_ex,
-    output reg[`RegBus] reg2_to_ex,
+    output reg[31:0] reg1_to_ex,
+    output reg[31:0] reg2_to_ex,
     output reg[`RegAddrBus] rsd_to_ex,
     output reg write_rsd_or_not_to_ex,
     output reg[`Cmd_Typebus] cmdtype_to_exe,    
@@ -37,25 +37,26 @@ always @(posedge clk_in) begin
         imm_out<=`ZeroWorld;      
     end
     else begin
-        if (branch_or_not==1) begin
-        reg1_to_ex<=`ZeroWorld;
-        reg2_to_ex<=`ZeroWorld;
+        if (rdy_in==1) begin
+            if (branch_or_not==1) begin
+        reg1_to_ex<=0;
+        reg2_to_ex<=0;
         rsd_to_ex<=5'h0;
-        write_rsd_or_not_to_ex<=`False;
+        write_rsd_or_not_to_ex<=0;
         cmdtype_to_exe<=6'h0;
-        pc_out<=`ZeroWorld; 
-        imm_out<=`ZeroWorld;      
+        pc_out<=0; 
+        imm_out<=0;      
         end
         else if(stall_in[2]==1&&stall_in[3]==0) begin
-        reg1_to_ex<=`ZeroWorld;
-        reg2_to_ex<=`ZeroWorld;
+        reg1_to_ex<=0;
+        reg2_to_ex<=0;
         rsd_to_ex<=5'h0;
-        write_rsd_or_not_to_ex<=`False;
+        write_rsd_or_not_to_ex<=0;
         cmdtype_to_exe<=6'h0;
-        pc_out<=`ZeroWorld; 
-        imm_out<=`ZeroWorld;  
+        pc_out<=0; 
+        imm_out<=0;  
         end
-        else if (stall_in[2]==0&&rdy_in==1) begin
+        else if (stall_in[2]==0) begin
         reg1_to_ex<=reg1_from_id;
         reg2_to_ex<=reg2_from_id;
         rsd_to_ex<=rsd_from_id;
@@ -63,7 +64,8 @@ always @(posedge clk_in) begin
         cmdtype_to_exe<=cmdtype_from_id;
         pc_out<=pc_in;
         imm_out<=imm_in;
-        end       
+        end  
+        end
         end
 end
 endmodule //ID_EX

@@ -1,4 +1,3 @@
-`include "/mnt/c/Users/18303/Desktop/cpu/CPU_ACM_2021/riscv/src/define.v"
 
 module pc (
     input  wire     clk_in,
@@ -10,7 +9,7 @@ module pc (
     input  wire branch_or_not,
     input wire[31:0] branch_addr,
     //to if
-    output reg [`InstAddrBus]    pc_out
+    output reg [31:0]    pc_out
     
 );
 
@@ -19,7 +18,7 @@ always @(posedge clk_in) begin
         if (branch_or_not==1&&rdy_in==1) begin
             pc_out<=branch_addr;
         end
-        else if(stall_in[0]==1&&rdy_in==1) begin
+        else if(stall_in[0]==0&&rdy_in==1) begin
             pc_out<=pc_out+4'h4;
         end
         else begin           
@@ -27,7 +26,7 @@ always @(posedge clk_in) begin
     end
     else
         begin
-        pc_out<=`ZeroWorld; 
+        pc_out<=0; 
         end
     end
 endmodule //pc
