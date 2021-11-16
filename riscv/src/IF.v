@@ -1,5 +1,4 @@
 `include "/mnt/c/Users/18303/Desktop/cpu/CPU_ACM_2021/riscv/src/define.v"
-
 module IF (
     input  wire rst_in,
 
@@ -49,7 +48,8 @@ begin
                 stall_from_if=1;
                 read_or_not=1;
                 intru_addr=pc_in;
-            end 
+            end
+            
         end
 end
 
