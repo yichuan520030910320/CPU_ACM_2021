@@ -29,9 +29,9 @@ module memctrl (
 );
 //define
 reg[31:0] preaddr;
-reg[1:0] mem_read_cnt;
-reg[1:0] mem_write_cnt;
-reg[1:0] if_read_cnt;
+reg[2:0] mem_read_cnt;
+reg[2:0] mem_write_cnt;
+reg[2:0] if_read_cnt;
 reg[31:0] mem_read_data;
 reg[31:0] if_read_instru;
 
@@ -144,6 +144,8 @@ always @(posedge clk_in) begin
                     default: begin                      
                     end
                 endcase
+                
+                $display( $time," if_read_cnt : %d",if_read_cnt," preaddr  : %d",preaddr,"  intru_addr: %d",intru_addr,"  d_in %h",d_in);
                 if (if_read_cnt==4) begin
                     if_load_done<=1;
                     mem_ctrl_busy_state<=0;
@@ -154,6 +156,7 @@ always @(posedge clk_in) begin
                 end else
                     begin
                         if_read_cnt<=if_read_cnt+1;
+                        //$display( $time," @@@ if_read_cnt : %d",if_read_cnt," preaddr  : %d",preaddr,"  intru_addr: %d",intru_addr,"  d_in %h",d_in);
                         preaddr<=intru_addr;                                         
                     end                
             end else 
