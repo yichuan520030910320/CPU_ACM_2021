@@ -1,4 +1,5 @@
-`include "C:\Users\18303\Desktop\cpu\CPU_ACM_2021\riscv\src\define.v"
+`include "/mnt/c/Users/18303/Desktop/cpu/CPU_ACM_2021/riscv/src/define.v"
+
 module ID_EX (
     input   wire    clk_in,
     input   wire    rst_in,
@@ -7,7 +8,6 @@ module ID_EX (
     input  wire[5:0] stall_in,
     //from id
     input  wire branch_or_not,
-    input wire [`InstAddrBus] input_pc,
     input wire[`RegBus] reg1_from_id,
     input wire[`RegBus] reg2_from_id,
     input wire[`RegAddrBus] rsd_from_id,
@@ -24,6 +24,7 @@ module ID_EX (
     output reg[`InstAddrBus] pc_out,
     output  reg[`Immbus] imm_out
 );
+
 
 always @(posedge clk_in) begin
     if(rst_in==`RstEnable)begin
@@ -62,8 +63,7 @@ always @(posedge clk_in) begin
         cmdtype_to_exe<=cmdtype_from_id;
         pc_out<=pc_in;
         imm_out<=imm_in;
-        end
-        
+        end       
         end
 end
 endmodule //ID_EX

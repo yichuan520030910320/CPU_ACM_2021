@@ -1,4 +1,5 @@
-`include "C:\Users\18303\Desktop\cpu\CPU_ACM_2021\riscv\src\define.v"
+`include "/mnt/c/Users/18303/Desktop/cpu/CPU_ACM_2021/riscv/src/define.v"
+
 module ID (
     input  wire rst_in,
     //from if_id
@@ -30,7 +31,7 @@ module ID (
     output reg[`Immbus] immout,
     output reg[`InstAddrBus] pc_out  ,
     //to stall ctrl
-    output wire stallfrom_ex  
+    output wire stallfrom_id
 );
 
 wire opcode=input_instru[6:0];
@@ -352,7 +353,7 @@ always @(*)begin
         stall2=0;   
         end
 end
-assign stallfrom_ex=stall1|stall2; 
+assign stallfrom_id=stall1|stall2; 
 
 
 endmodule //ID

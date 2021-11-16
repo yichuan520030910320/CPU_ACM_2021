@@ -1,4 +1,5 @@
-`include "C:\Users\18303\Desktop\cpu\CPU_ACM_2021\riscv\src\define.v"
+`include "/mnt/c/Users/18303/Desktop/cpu/CPU_ACM_2021/riscv/src/define.v"
+
 module regfile (
     input  wire clk_in,
     input wire rst_in,
@@ -7,11 +8,11 @@ module regfile (
     input  wire write_or_not,
     input wire[`RegAddrBus] writeaddr,
     input wire[`RegBus] writedata,
-    //from id
+    
     input  wire read1_or_not,
     input  wire[`RegAddrBus] readaddr1,
     output  reg[`RegBus] read1data,
-    //from id
+    
     input  wire read2_or_not,
     input  wire[`RegAddrBus] readaddr2,
     output  reg[`RegBus] read2data

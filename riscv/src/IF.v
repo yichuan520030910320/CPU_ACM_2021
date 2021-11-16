@@ -1,4 +1,5 @@
-`include "C:\Users\18303\Desktop\cpu\CPU_ACM_2021\riscv\src\define.v"
+`include "/mnt/c/Users/18303/Desktop/cpu/CPU_ACM_2021/riscv/src/define.v"
+
 module IF (
     input  wire rst_in,
 

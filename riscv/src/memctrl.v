@@ -1,4 +1,5 @@
-`include "C:\Users\18303\Desktop\cpu\CPU_ACM_2021\riscv\src\define.v"
+`include "/mnt/c/Users/18303/Desktop/cpu/CPU_ACM_2021/riscv/src/define.v"
+
 module memctrl (   
     input   wire    clk_in,
     input   wire    rst_in,
@@ -24,7 +25,7 @@ module memctrl (
     input wire  [7:0]           d_in    , // data input
     //to ram
     output  wire                   r_or_w,  // read/write select (read: 1, write: 0)
-    output  wire[15:0]             a_out,     // memory address
+    output  wire[31:0]             a_out,     // memory address
     output  wire[7:0]              d_out     // data output    
 );
 //define
@@ -103,6 +104,7 @@ always @(posedge clk_in) begin
                     mem_read_cnt<=0;
                     mem_ctrl_busy_state<=2'b00;
                     mem_ctrl_load_to_mem<=mem_read_data;
+                    mem_read_data<=0;
                 end else
                     begin
                         mem_read_cnt<=mem_read_cnt+1;                       
@@ -153,6 +155,7 @@ always @(posedge clk_in) begin
                     if_read_cnt<=0;
                     mem_ctrl_instru_to_if<=if_read_instru;
                     preaddr<=0;
+                    if_read_instru<=0;
                 end else
                     begin
                         if_read_cnt<=if_read_cnt+1;
