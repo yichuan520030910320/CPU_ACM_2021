@@ -238,6 +238,7 @@ wire ex_write_or_not;
 wire [31:0] ex_mem_addr_;
 wire ex_mem_read_or_not;
 wire[5:0] ex_cmd_type_;
+wire[31:0] store_data_out_from_ex;
 EX ex_ (
 //from id_ex
     .rst_in(rst_in), 
@@ -257,7 +258,8 @@ EX ex_ (
     .branch_address(branch_out_addr),
     //to ex_mem
     .mem_addr(ex_mem_addr_),
-    .cmdtype_out(ex_cmd_type_),  
+    .cmdtype_out(ex_cmd_type_), 
+    .mem_val_out_for_store(store_data_out_from_ex),
     //forward to id
     .isloading_ex(isloading_ex),
     .ex_forward_id_o(ex_forward_id_i_),
@@ -273,7 +275,13 @@ wire write_rsd_or_not_to_mem;
 wire[31:0] mem_addr_out_mem;
 wire mem_read_or_not_tomem;
 
+//mem data store
+wire [31:0] store_data_to_mem;
+
 EX_MEM ex_mem_ (
+    .strore_data(store_data_out_from_ex),
+    .strore_data_out(store_data_to_mem), 
+
     .clk_in(clk_in),
     .rst_in(rst_in),
     .rdy_in(rdy_in), 
@@ -306,7 +314,7 @@ wire[31:0] memaddr_to_read_to_memctrl;
 wire[31:0]memdata_to_write_to_memctrl;
 wire[2:0] data_len_;
 MEM mem_ (
-
+    .storedata_in(store_data_to_mem),
     .rst_in(rst_in),
     //from ex_mem
     .input_rd_addr(rsd_addr_out_to_mem),

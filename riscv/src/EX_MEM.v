@@ -1,6 +1,10 @@
 `include "/mnt/c/Users/18303/Desktop/cpu/CPU_ACM_2021/riscv/src/define.v"
 
 module EX_MEM (
+    //debug add
+    input  wire[31:0] strore_data,
+    output reg[31:0] strore_data_out, 
+
     input   wire    clk_in,
     input   wire    rst_in,
     input  wire     rdy_in, 
@@ -12,7 +16,6 @@ module EX_MEM (
     input wire[`RegBus] rsd_data,
     input wire write_rsd_or_not,
     input wire[`Dataaddress] mem_addr,
-
     input wire[`Cmd_Typebus] cmdtype,    
     //to mem
     output reg[`Cmd_Typebus] cmdtype_out,    

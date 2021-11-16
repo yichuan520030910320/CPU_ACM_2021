@@ -1,6 +1,7 @@
 `include "/mnt/c/Users/18303/Desktop/cpu/CPU_ACM_2021/riscv/src/define.v"
 
 module MEM (
+    input  wire[31:0] storedata_in,
     input  wire rst_in,
     //from ex_mem
     input wire [`RegAddrBus] input_rd_addr,
@@ -30,7 +31,7 @@ module MEM (
     //to mem ctrl
     output reg read_mem,
     output reg write_mem,
-    output  reg[31:0] mem_addr_to_read,
+    output  reg[31:0] mem_addr_to_read,//in fact this address is both for read and write
     output reg[31:0] mem_data_to_write,
     output  reg[2:0] data_len
 );
@@ -55,8 +56,7 @@ always @(*)begin
         out_rd_data=input_rd_data;
         out_write_or_not=write_or_not;
 
-        if (mem_load_done==1) begin//mem ctrl finish work
-            out_write_or_not=1;
+        if (mem_load_done==1) begin//mem ctrl finish work both for store and load
             case (cmdtype)
             `CmdLB:
             begin
@@ -106,10 +106,10 @@ always @(*)begin
                 end
                 `CmdLBU:
                 begin
-                    data_len=2;
+                    data_len=1;
                 end
                 `CmdLHU:begin
-                    data_len=4;
+                    data_len=2;
                 end
                 default
                 begin
@@ -123,6 +123,7 @@ always @(*)begin
             end
             `CmdSB,`CmdSH,`CmdSW:
             begin
+                mem_data_to_write=storedata_in;
                 write_mem=1;
                 stall_from_mem=1;
                 mem_addr_to_read=mem_addr;

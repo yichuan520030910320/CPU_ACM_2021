@@ -16,7 +16,8 @@ module EX (
     output reg branch_or_not,
     output reg[`InstAddrBus] branch_address,
     output reg[`Dataaddress] mem_addr,
-    output reg[`Cmd_Typebus] cmdtype_out,  
+    output reg[`Cmd_Typebus] cmdtype_out, 
+    output reg[31:0] mem_val_out_for_store,
     //forward to id
     output  reg isloading_ex,
     output  reg ex_forward_id_o,
@@ -35,6 +36,7 @@ always @(*) begin
     ex_forward_addr_o=0;
     ex_forward_data_o=0;  
     cmdtype_out=cmdtype_to_exe;  
+    mem_val_out_for_store=0;
     if (rst_in==`RstEnable)begin
         
     end
@@ -106,15 +108,19 @@ always @(*) begin
             end 
         end          
         `CmdLB,`CmdLH,`CmdLW,`CmdLBU,`CmdLHU:begin
-            mem_addr=reg1_to_ex+imm_in;            
+            mem_addr=reg1_to_ex+imm_in;   
+            write_rsd_or_not=`True;
+            rsd_addr_to_write=rsd_to_ex;            
         end                                 
         `CmdSB,          
         `CmdSH,          
         `CmdSW:begin
-            mem_addr=reg1_to_ex+imm_in;           
+            mem_addr=reg1_to_ex+imm_in;   
+            mem_val_out_for_store=reg2_to_ex;        
         end          
         `CmdADDI:    begin
             write_rsd_or_not=`True;
+            rsd_addr_to_write=rsd_to_ex;           
             rsd_data=reg1_to_ex+imm_in;
             
         end      
@@ -154,7 +160,7 @@ always @(*) begin
         `CmdSLLI:begin
             write_rsd_or_not=`True;
             rsd_addr_to_write=rsd_to_ex;
-            rsd_data=reg1_to_ex<<imm_in;            
+            rsd_data=reg1_to_ex<<imm_in[4:0];            
         end             
         `CmdSRLI:begin
             write_rsd_or_not=`True;
