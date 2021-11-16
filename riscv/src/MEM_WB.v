@@ -28,7 +28,7 @@ always @(posedge clk_in) begin
         mem_reg_addr_out<=`ZeroWorld;
         if_write_out<=`False; 
         end
-        else if(stall_in[3]==0&&rdy_in==1) begin
+        else if(stall_in[4]==0&&rdy_in==1) begin
         mem_reg_addr_out<=mem_reg_addr;
         mem_reg_addr_out<=mem_reg_data;
         if_write_out<=if_write;

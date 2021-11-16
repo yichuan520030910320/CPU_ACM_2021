@@ -6,25 +6,30 @@ module regfile (
 
     //from mem_wb
     input  wire write_or_not,
-    input wire[`RegAddrBus] writeaddr,
-    input wire[`RegBus] writedata,
+    input wire[4:0] writeaddr,
+    input wire[31:0] writedata,
     
     input  wire read1_or_not,
-    input  wire[`RegAddrBus] readaddr1,
-    output  reg[`RegBus] read1data,
+    input  wire[4:0] readaddr1,
+    output  reg[31:0] read1data,
     
     input  wire read2_or_not,
-    input  wire[`RegAddrBus] readaddr2,
-    output  reg[`RegBus] read2data
+    input  wire[4:0] readaddr2,
+    output  reg[31:0] read2data
 
 );
-reg [`RegBus]regs [0:31];
+integer  i;
+reg [31:0]regs [0:31];
 always @(posedge clk_in ) begin
     if (rst_in==`Rstdisable) begin
         if ((write_or_not==`Writeable)&&(writeaddr!=(5'h0))) begin
             regs[writeaddr]<=writedata;
         end
     end    
+    else 
+    begin
+for (i=0; i<32;i=i+1) regs[i]<=0;
+        end
 end
 always @(*) begin
     if (rst_in==`RstEnable) begin
