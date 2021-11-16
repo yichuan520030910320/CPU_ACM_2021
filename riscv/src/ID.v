@@ -34,9 +34,9 @@ module ID (
     output wire stallfrom_id
 );
 
-wire opcode=input_instru[6:0];
-wire fun3=input_instru[14:12];
-wire fun7=input_instru[31:25];
+wire[6:0] opcode=input_instru[6:0];
+wire[2:0] fun3=input_instru[14:12];
+wire[6:0] fun7=input_instru[31:25];
 
 
 reg[`RegBus] immreg;// record imm
