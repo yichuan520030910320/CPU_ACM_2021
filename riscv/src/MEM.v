@@ -52,6 +52,7 @@ always @(*)begin
     if (rst_in==`RstEnable) begin
         
     end else begin
+        
         out_rd_addr=input_rd_addr;
         out_rd_data=input_rd_data;
         out_write_or_not=write_or_not;
@@ -85,12 +86,15 @@ always @(*)begin
             stall_from_mem=0;                   
         end else 
         begin
+            
             case (cmdtype)
             `CmdLB,`CmdLH, `CmdLW,`CmdLBU,`CmdLHU:
             begin
+                
                 read_mem=1;
                 stall_from_mem=1;
                 mem_addr_to_read=mem_addr;
+                $display("read_mem : ",read_mem,"stall ",stall_from_mem);
                 case (cmdtype)
                 `CmdLB:
                 begin

@@ -97,7 +97,7 @@ always @(posedge clk_in) begin
                     default: begin                       
                     end
                 endcase
-                if (mem_read_cnt==data_len) begin
+                if (mem_read_cnt==data_len+1) begin
                     mem_ctrl_busy_state<=0;
                     mem_load_done<=1;
                     mem_read_cnt<=0;

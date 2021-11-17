@@ -26,7 +26,7 @@
 ***************************************************************************************************/
 
 // modification allowed for debugging purposes
-
+`timescale 1ns/1ps
 module hci
 #(
   parameter SYS_CLK_FREQ = 100000000,

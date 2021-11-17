@@ -15,6 +15,7 @@ module IF_ID (
     output reg[31:0] output_pc,
     output reg[31:0] output_instru 
 );
+reg [31:0] preinstruction_record;
 always @(posedge clk_in ) begin
     if (rst_in==0) begin
         if (rdy_in==1) begin
@@ -30,7 +31,16 @@ always @(posedge clk_in ) begin
         end else if(stall_in[1]==0) begin
             output_pc <=input_pc;
             output_instru<=input_instru;
-        end  
+            if (input_instru==0) begin
+                output_instru<=preinstruction_record;   
+            end
+        end  else
+            begin
+                if (input_instru!=0) begin
+                preinstruction_record<=input_instru;    
+            end
+
+            end
         //otherwise the Sequential circuit contain the original state     
     end
     end
