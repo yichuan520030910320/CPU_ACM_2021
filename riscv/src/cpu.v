@@ -279,8 +279,8 @@ wire mem_read_or_not_tomem;
 wire [31:0] store_data_to_mem;
 
 EX_MEM ex_mem_ (
-    .strore_data(store_data_out_from_ex),
-    .strore_data_out(store_data_to_mem), 
+    .store_data(store_data_out_from_ex),
+    .store_data_out(store_data_to_mem), 
 
     .clk_in(clk_in),
     .rst_in(rst_in),
@@ -338,7 +338,7 @@ MEM mem_ (
     .stall_from_mem(mem_stall),
 
     //from mem ctrl
-    .mem_load_done(mem_load_done),
+    .mem_load_done(memload_done),
     .mem_ctrl_busy_state(mem_busy_state),
     .mem_ctrl_read_in(memctrl_load_to_mem),
 

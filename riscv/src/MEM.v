@@ -127,6 +127,7 @@ always @(*)begin
                 write_mem=1;
                 stall_from_mem=1;
                 mem_addr_to_read=mem_addr;
+                //$display("write mem :", write_mem);
                 case (cmdtype)
                 `CmdSB:
                 begin

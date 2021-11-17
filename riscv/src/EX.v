@@ -77,7 +77,8 @@ always @(*) begin
             end
             
         end          
-        `CmdBNE: begin               
+        `CmdBNE: begin    
+            $display("reg1_toex: ",reg1_to_ex," reg2_toex: ",reg2_to_ex);
             if (reg1_to_ex!=reg2_to_ex) begin
                 branch_or_not=`True;
                 branch_address=pc_in+imm_in;                 

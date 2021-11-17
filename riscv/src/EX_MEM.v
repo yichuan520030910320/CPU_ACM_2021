@@ -2,8 +2,8 @@
 
 module EX_MEM (
     //debug add
-    input  wire[31:0] strore_data,
-    output reg[31:0] strore_data_out, 
+    input  wire[31:0] store_data,
+    output reg[31:0] store_data_out, 
 
     input   wire    clk_in,
     input   wire    rst_in,
@@ -27,12 +27,14 @@ module EX_MEM (
 );
 
 always @(posedge clk_in) begin
-    cmdtype_out<=cmdtype;
     if (rst_in==`RstEnable) begin
         rsd_addr_out<=`ZeroWorld;
         rsd_data_out<=`ZeroWorld;
         write_rsd_or_not_out<=`False;
         mem_addr_out<=`ZeroWorld;
+        store_data_out<=0;
+        cmdtype_out<=0;
+
 
     end
     else
@@ -42,6 +44,8 @@ always @(posedge clk_in) begin
                 rsd_data_out<=`ZeroWorld;
                 write_rsd_or_not_out<=`False;
                 mem_addr_out<=`ZeroWorld;
+                store_data_out<=0;
+                cmdtype_out<=0;
             end
             else if(stall_in[3]==0&&rdy_in==1)
             begin
@@ -49,6 +53,9 @@ always @(posedge clk_in) begin
                 rsd_data_out<=rsd_data;
                 write_rsd_or_not_out<=write_rsd_or_not;
                 mem_addr_out<=mem_addr;
+                store_data_out<=store_data;
+                cmdtype_out<=cmdtype;
+
             end               
         end    
 end

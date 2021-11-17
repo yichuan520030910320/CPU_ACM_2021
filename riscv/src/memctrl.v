@@ -159,7 +159,7 @@ always @(posedge clk_in) begin
                     end 
                     preaddr<=intru_addr; 
 
-                $display($time," below if_read_cnt : %d",if_read_cnt," preaddr  : %d",preaddr,"  intru_addr: %d",intru_addr,"  d_in %h",d_in,"   mem ctrl instru to if : %h",mem_ctrl_instru_to_if,"  if read_intru %h ",if_read_instru);
+                //$display($time," below if_read_cnt : %d",if_read_cnt," preaddr  : %d",preaddr,"  intru_addr: %d",intru_addr,"  d_in %h",d_in,"   mem ctrl instru to if : %h",mem_ctrl_instru_to_if,"  if read_intru %h ",if_read_instru);
 
             end          
             else 
