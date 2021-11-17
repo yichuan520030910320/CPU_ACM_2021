@@ -26,7 +26,7 @@ initial begin
   repeat(50) #1 clk=!clk;
   //$display(" in testbench : " ,$time);
   rst=0; 
-  repeat(200)  #1 clk=!clk;
+  repeat(400)  #1 clk=!clk;
 
   $finish;
 end

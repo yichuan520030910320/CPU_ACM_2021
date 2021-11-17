@@ -14,7 +14,6 @@ module pc (
 );
 always @(posedge clk_in) begin
     if (!rst_in==1) begin
-        $display("branch or not :",branch_or_not,"  branch addr : ",branch_addr,"  rdy_in  :",rdy_in);
         if (branch_or_not==1&&rdy_in==1) begin
             pc_out<=branch_addr;
         end
