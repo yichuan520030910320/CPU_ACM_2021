@@ -66,7 +66,7 @@ wire [31:0] if_pc_out_;
 wire [31:0] if_instru_out_to_if_id;
 
 //if to memctrl
-wire if_read_or_not;
+wire if_read_or_not_;
 wire[31:0] if_read_addr_tomemctrl_;
 
 
@@ -90,7 +90,7 @@ IF if_ (
     .mem_ctrl_busy_state(mem_busy_state),
     .mem_ctrl_read_in(memctrl_load_to_if),
     //to mem ctrl
-    .read_or_not(if_read_or_not),  
+    .read_or_not(if_read_or_not_),  
     .intru_addr(if_read_addr_tomemctrl_)
 
 );
@@ -152,7 +152,7 @@ ID id_ (
     .reg1_data(reg1_data_),
     .reg2_data(reg2_data_),
     //forwarding from ex
-    .isloading_ex(isloading_ex),
+    .isloading_ex(isloading_ex_),
     .ex_forward_id_i(ex_forward_id_i_),
     .ex_forward_data_i(ex_forward_data_i_),
     .ex_forward_addr_i(ex_forward_addr_i_), 
@@ -213,7 +213,7 @@ ID_EX id_ex_(
     //from stallctrl
     .stall_in(from_stall_ctrl),
     //from id
-    .branch_or_not(branch_or_not),
+    .branch_or_not(branch_or_not_),
     .reg1_from_id(id_reg1_to_ex_),
     .reg2_from_id(id_reg2_to_ex_),
     .rsd_from_id(id_rsd_to_ex_),
@@ -254,14 +254,14 @@ EX ex_ (
     .rsd_data(ex_rsd_data_),
     .write_rsd_or_not(ex_write_or_not),
     //to pc if_id id_ex 
-    .branch_or_not(branch_or_not),
+    .branch_or_not(branch_or_not_),
     .branch_address(branch_out_addr),
     //to ex_mem
     .mem_addr(ex_mem_addr_),
     .cmdtype_out(ex_cmd_type_), 
     .mem_val_out_for_store(store_data_out_from_ex),
     //forward to id
-    .isloading_ex(isloading_ex),
+    .isloading_ex(isloading_ex_),
     .ex_forward_id_o(ex_forward_id_i_),
     .ex_forward_data_o(ex_forward_data_i_),
     .ex_forward_addr_o(ex_forward_addr_i_)
@@ -387,7 +387,7 @@ memctrl memctrl_ (
     .if_load_done(if_load_done),
     .mem_ctrl_instru_to_if(memctrl_load_to_if),
     //from if
-    .if_read_or_not(if_read_or_not),  
+    .if_read_or_not(if_read_or_not_),  
     .intru_addr(if_read_addr_tomemctrl_),
     //from ram
     .d_in    (mem_din), // data input
