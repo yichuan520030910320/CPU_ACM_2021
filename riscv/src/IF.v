@@ -37,6 +37,7 @@ begin
                 stall_from_if=1;     
             end
             else begin
+
                 stall_from_if=1;
                 read_or_not=1;
                 intru_addr=pc_in;

@@ -17,13 +17,16 @@ riscv_top #(.SIM(1)) top(
 
 initial begin
   $dumpfile("/mnt/c/Users/18303/Desktop/cpu/CPU_ACM_2021/riscv/test/out.vcd");
-  $dumpvars;
+  $dumpvars(0,testbench);
+  
 
   clk=0;
   rst=1;
+  
   repeat(50) #1 clk=!clk;
+  //$display(" in testbench : " ,$time);
   rst=0; 
-  repeat(500)  #1 clk=!clk;
+  repeat(200)  #1 clk=!clk;
 
   $finish;
 end

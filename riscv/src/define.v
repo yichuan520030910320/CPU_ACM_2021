@@ -135,7 +135,7 @@
 `define CmdORI 6'b010111
 `define CmdANDI 6'b011000
 `define CmdSLLI 6'b011001
-`define CmdSRLI 6'b0110010
+`define CmdSRLI 6'b011010
 `define CmdSRAI 6'b011011
 `define CmdADD 6'b011100
 `define CmdSUB 6'b011101

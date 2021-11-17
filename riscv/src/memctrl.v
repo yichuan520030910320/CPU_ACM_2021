@@ -120,6 +120,7 @@ always @(posedge clk_in) begin
                         mem_write_cnt<=mem_write_cnt+1;                       
                     end                   
             end else if(if_read_or_not==1)begin
+
                 if (preaddr!=intru_addr) begin
                     if_read_cnt<=0;
                 end
@@ -143,23 +144,25 @@ always @(posedge clk_in) begin
                     end
                     default: begin                      
                     end
-                endcase
-                
-                $display( $time," if_read_cnt : %d",if_read_cnt," preaddr  : %d",preaddr,"  intru_addr: %d",intru_addr,"  d_in %h",d_in);
-                if (if_read_cnt==4) begin
+                endcase              
+                if (if_read_cnt==5) begin
                     if_load_done<=1;
                     mem_ctrl_busy_state<=0;
                     if_read_cnt<=0;
                     mem_ctrl_instru_to_if<=if_read_instru;
-                    preaddr<=0;
                     if_read_instru<=0;
-                end else
+                    preaddr<=intru_addr; 
+                end else if(preaddr==intru_addr)
                     begin
                         if_read_cnt<=if_read_cnt+1;
-                        //$display( $time," @@@ if_read_cnt : %d",if_read_cnt," preaddr  : %d",preaddr,"  intru_addr: %d",intru_addr,"  d_in %h",d_in);
                         preaddr<=intru_addr;                                         
-                    end                
-            end else 
+                    end 
+                    preaddr<=intru_addr; 
+
+                $display($time," below if_read_cnt : %d",if_read_cnt," preaddr  : %d",preaddr,"  intru_addr: %d",intru_addr,"  d_in %h",d_in,"   mem ctrl instru to if : %h",mem_ctrl_instru_to_if,"  if read_intru %h ",if_read_instru);
+
+            end          
+            else 
             begin
             end
         end

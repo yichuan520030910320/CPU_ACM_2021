@@ -409,20 +409,20 @@ stallctrl stallctrl_ (
     .stall(from_stall_ctrl)//stall[0] stand for pc stop 1stand for stop
 );
 
-always @(posedge clk_in)
-  begin
-    if (rst_in)
-      begin
+// always @(posedge clk_in)
+//   begin
+//     if (rst_in)
+//       begin
       
-      end
-    else if (!rdy_in)
-      begin
+//       end
+//     else if (!rdy_in)
+//       begin
       
-      end
-    else
-      begin
+//       end
+//     else
+//       begin
       
-      end
-  end
+//       end
+//   end
 
 endmodule
