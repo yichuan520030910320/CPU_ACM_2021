@@ -1,5 +1,5 @@
 #include "io.h"
 int main(){
-    println("Hello World");
+    println(1);
     return 0;
 }

@@ -15,27 +15,19 @@ Disassembly of section .rom:
 Disassembly of section .text.startup:
 
 00001000 <main>:
-    1000:	000017b7          	lui	a5,0x1
-    1004:	03078793          	addi	a5,a5,48 # 1030 <main+0x30>
-    1008:	04800713          	li	a4,72
+    1000:	00104783          	lbu	a5,1(zero) # 1 <main-0xfff>
+    1004:	00078e63          	beqz	a5,1020 <main+0x20>
+    1008:	00100713          	li	a4,1
     100c:	000306b7          	lui	a3,0x30
-    1010:	00e68023          	sb	a4,0(a3) # 30000 <__heap_start+0x2e000>
-    1014:	0017c703          	lbu	a4,1(a5)
-    1018:	00178793          	addi	a5,a5,1
-    101c:	fe071ae3          	bnez	a4,1010 <main+0x10>
-    1020:	00a00793          	li	a5,10
-    1024:	00f68023          	sb	a5,0(a3)
-    1028:	00000513          	li	a0,0
-    102c:	00008067          	ret
-
-Disassembly of section .rodata.str1.4:
-
-00001030 <__bss_end-0xc>:
-    1030:	6548                	flw	fa0,12(a0)
-    1032:	6c6c                	flw	fa1,92(s0)
-    1034:	6f57206f          	j	73f28 <__heap_start+0x71f28>
-    1038:	6c72                	flw	fs8,28(sp)
-    103a:	0064                	addi	s1,sp,12
+    1010:	00f68023          	sb	a5,0(a3) # 30000 <__heap_start+0x2e000>
+    1014:	00174783          	lbu	a5,1(a4)
+    1018:	00170713          	addi	a4,a4,1
+    101c:	fe079ae3          	bnez	a5,1010 <main+0x10>
+    1020:	000307b7          	lui	a5,0x30
+    1024:	00a00713          	li	a4,10
+    1028:	00e78023          	sb	a4,0(a5) # 30000 <__heap_start+0x2e000>
+    102c:	00000513          	li	a0,0
+    1030:	00008067          	ret
 
 Disassembly of section .riscv.attributes:
 

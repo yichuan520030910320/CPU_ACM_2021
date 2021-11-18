@@ -35,15 +35,7 @@ reg[2:0] if_read_cnt;
 reg[31:0] mem_read_data;
 reg[31:0] if_read_instru;
 
-//initial
-initial begin
-    preaddr=0;
-    mem_read_cnt=0;
-    mem_write_cnt=0;
-    if_read_cnt=0;
-    mem_read_data=0;
-    if_read_instru=0;
-end
+
 
 //initial select ram addr
 wire[31:0] nowaddr=(read_mem||write_mem) ? mem_addr:intru_addr;
@@ -67,6 +59,12 @@ assign d_out=val[mem_write_cnt];
 
 always @(posedge clk_in) begin
     if(rst_in==1) begin
+            preaddr=0;
+        mem_read_cnt=0;
+        mem_write_cnt=0;
+        if_read_cnt=0;
+        mem_read_data=0;
+        if_read_instru=0;
         mem_load_done<=0;
         mem_ctrl_instru_to_if<=0;
         mem_ctrl_busy_state<=0;
@@ -164,6 +162,11 @@ always @(posedge clk_in) begin
             end          
             else 
             begin
+                    mem_load_done<=0;
+            mem_ctrl_instru_to_if<=0;
+            mem_ctrl_busy_state<=0;
+            if_load_done<=0;
+            mem_ctrl_instru_to_if<=0;
             end
         end
     end

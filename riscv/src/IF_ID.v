@@ -48,6 +48,7 @@ always @(posedge clk_in ) begin
         begin
             output_pc<=0;
             output_instru<=0;
+            preinstruction_record=0;
         end
 end
 endmodule //IF_ID

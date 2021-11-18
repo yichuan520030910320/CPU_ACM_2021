@@ -94,7 +94,7 @@ always @(*)begin
                 read_mem=1;
                 stall_from_mem=1;
                 mem_addr_to_read=mem_addr;
-                $display("read_mem : ",read_mem,"stall ",stall_from_mem);
+                //$display("read_mem : ",read_mem,"stall ",stall_from_mem);
                 case (cmdtype)
                 `CmdLB:
                 begin

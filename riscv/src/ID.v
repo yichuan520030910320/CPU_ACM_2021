@@ -63,6 +63,7 @@ always @(*) begin
     if (rst_in==`RstEnable) begin        
     end
     else
+    pc_out=input_pc;
         begin
             case (opcode)
                 `OP_LUI:
