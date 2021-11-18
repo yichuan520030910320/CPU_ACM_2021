@@ -258,6 +258,7 @@ always @*
             end
             d_state = S_DECODE; 
             d_program_finish = 1'b1;
+            $display($time);
             $display("IO:Return");
             $finish;
           end

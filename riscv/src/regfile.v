@@ -1,4 +1,6 @@
-`include "/mnt/c/Users/18303/Desktop/cpu/CPU_ACM_2021/riscv/src/define.v"
+`include"/mnt/c/Users/18303/Desktop/cpu/CPU_ACM_2021/riscv/src/define.v"
+
+
 module regfile (
     input  wire clk_in,
     input wire rst_in,
@@ -34,7 +36,9 @@ always @(*) begin
         read1data=writedata;
     end
     else if(read1_or_not==`Readable) begin
+        
         read1data=regs[readaddr1];
+        $display("read1data: ",read1data,"  readaddr: ",readaddr1);
     end
     else
         begin
@@ -50,7 +54,7 @@ always @(*) begin
     else if(write_or_not==`Writeable&&readaddr2==writeaddr&&read2_or_not==`Readable) begin
         read2data=writedata;
     end
-    else if(read1_or_not==`Readable) begin
+    else if(read2_or_not==`Readable) begin
         read2data=regs[readaddr2];
     end
     else

@@ -55,7 +55,7 @@ assign val[0]=mem_data_to_write[7:0];
 assign val[1]=mem_data_to_write[15:8];
 assign val[2]=mem_data_to_write[23:16];
 assign val[3]=mem_data_to_write[31:24];
-assign d_out=val[mem_write_cnt];
+assign d_out=val[mem_write_cnt-1];
 
 always @(posedge clk_in) begin
     if(rst_in==1) begin

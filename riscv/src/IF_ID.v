@@ -50,5 +50,6 @@ always @(posedge clk_in ) begin
             output_instru<=0;
             preinstruction_record=0;
         end
+        $display("%h",output_pc);
 end
 endmodule //IF_ID

@@ -1,4 +1,6 @@
-`include "/mnt/c/Users/18303/Desktop/cpu/CPU_ACM_2021/riscv/src/define.v"
+`include"/mnt/c/Users/18303/Desktop/cpu/CPU_ACM_2021/riscv/src/define.v"
+
+
 
 module EX_MEM (
     //debug add
