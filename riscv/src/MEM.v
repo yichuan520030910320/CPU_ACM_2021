@@ -135,15 +135,15 @@ always @(*)begin
                 case (cmdtype)
                 `CmdSB:
                 begin
-                    data_len=1;
+                    data_len=0;
                 end
                 `CmdSH:
                 begin
-                    data_len=2;
+                    data_len=1;
                 end 
                 `CmdSW:
                 begin
-                    data_len=4;
+                    data_len=3;
                 end
                 default
                 begin                    
