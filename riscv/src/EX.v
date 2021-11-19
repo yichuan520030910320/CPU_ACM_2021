@@ -80,11 +80,12 @@ always @(*) begin
             end
             
         end          
-        `CmdBNE: begin    
+        `CmdBNE: begin  
             if (reg1_to_ex!=reg2_to_ex) begin
                 branch_or_not=`True;
                 branch_address=pc_in+imm_in;                 
-            end            
+            end     
+            //$display("reg1_to_ex: %h",reg1_to_ex," reg2_to_ex : %h",reg2_to_ex," barch addr:%h ",branch_address," imm :%h ",imm_in,"  pc_in :%h",pc_in);         
         end           
         `CmdBLT: begin
             if ($signed(reg1_to_ex)<$signed(reg2_to_ex)) begin

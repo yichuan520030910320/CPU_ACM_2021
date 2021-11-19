@@ -236,7 +236,7 @@ always @(*) begin
                     case (fun3)
                     'h0:begin
                         case (fun7)
-                            `FUN7ADD: cmdtype_to_exe=`CmdAND;
+                            `FUN7ADD: cmdtype_to_exe=`CmdADD;
                             `FUN7SUB:cmdtype_to_exe=`CmdSUB;
                             default: ;
                         endcase

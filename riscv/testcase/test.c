@@ -7,12 +7,14 @@ int a(){
 int main() {
     
     
-    // int a=1;
-    // // int b=a+3;
-    // // outlln(b);
-    // outlln(a);
-    // outlln(11);
-    outlln(1000);
+    int a=1;
+    // int b=a+3;
+    // outlln(b);
+    outlln(a);
+    outlln(11);
+
+    
+    //outlln(1000);
 
 
 // int k=a()+a();
