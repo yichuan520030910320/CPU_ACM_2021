@@ -1,26 +1,13 @@
 #include "io.h"
-int a(){
-
-    return 8;
+int gcd(int x, int y) {
+  if (x%y == 0) return y;
+  else return gcd(y, x%y);
 }
 
 int main() {
-    
-    
-    int a=1;
-    // int b=a+3;
-    // outlln(b);
-    outlln(a);
-    outlln(11);
+    outlln(gcd(10,1));
+    outlln(gcd(34986,3087));
+    outlln(gcd(2907,1539));
 
-    
-    //outlln(1000);
-
-
-// int k=a()+a();
-// outlln(k);
-// outlln(a());
-
-    
-    
+    return 0;
 }
