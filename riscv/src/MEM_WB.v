@@ -1,4 +1,5 @@
 `include"/mnt/c/Users/18303/Desktop/cpu/CPU_ACM_2021/riscv/src/define.v"
+`timescale 1ns/1ps
 
 
 

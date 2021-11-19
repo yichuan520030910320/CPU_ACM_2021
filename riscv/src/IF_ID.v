@@ -1,3 +1,4 @@
+`timescale 1ns/1ps
 
 module IF_ID (
     input  wire                 clk_in,
@@ -50,6 +51,6 @@ always @(posedge clk_in ) begin
             output_instru<=0;
             preinstruction_record=0;
         end
-        $display("%h",output_pc);
+        if(!output_pc==0)$display($time,"  %h",output_pc);
 end
 endmodule //IF_ID

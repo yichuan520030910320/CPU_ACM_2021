@@ -215,8 +215,8 @@ always @(*) begin
                         `FUN3SRLI:begin
                             immreg={26'h0,input_instru[25:20]};
                             case (fun7)
-                                `FUN7SRLI: cmdtype_to_exe=`FUN7SRLI;
-                                `FUN7SRAI:cmdtype_to_exe=`FUN7SRAI;
+                                `FUN7SRLI: cmdtype_to_exe=`CmdSRLI;
+                                `FUN7SRAI:cmdtype_to_exe=`CmdSRAI;
                                 default: ;
                             endcase
                         end
@@ -293,12 +293,15 @@ always @(*)begin
         reg1_to_ex=0;
     end
     else if(reg1_reador_not==`True&&ex_forward_id_i==`True&&ex_forward_addr_i==reg1addr) begin
+        //unneccessary to check the 0 address it can be judged by the first circumstance
         reg1_to_ex=ex_forward_data_i;
+        
         stall1=0;
 
     end
     else if(reg1_reador_not==`True&&mem_forward_id_i==`True&&mem_forward_addr_i==reg1addr) begin
         reg1_to_ex=mem_forward_data_i;
+        
         stall1=0;
 
     end
@@ -330,7 +333,9 @@ always @(*)begin
         reg2_to_ex=0;
     end
     else if(reg2_reador_not==`True&&ex_forward_id_i==`True&&ex_forward_addr_i==reg2addr) begin
+
         reg2_to_ex=ex_forward_data_i;
+        
         stall2=0;   
 
     end

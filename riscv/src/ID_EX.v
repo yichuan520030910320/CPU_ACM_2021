@@ -1,4 +1,5 @@
 `include"/mnt/c/Users/18303/Desktop/cpu/CPU_ACM_2021/riscv/src/define.v"
+`timescale 1ns/1ps
 
 
 module ID_EX (
@@ -9,7 +10,7 @@ module ID_EX (
     input  wire[5:0] stall_in,
 
     input  wire branch_or_not,
-        //from id
+    //from id
     input wire[31:0] reg1_from_id,
     input wire[31:0] reg2_from_id,
     input wire[`RegAddrBus] rsd_from_id,

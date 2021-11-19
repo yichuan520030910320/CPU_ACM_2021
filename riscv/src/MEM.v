@@ -80,9 +80,9 @@ always @(*)begin
             end
             default
             begin
-                
             end                
             endcase
+            data_len=0;
             stall_from_mem=0;                   
         end else 
         begin
@@ -90,11 +90,9 @@ always @(*)begin
             case (cmdtype)
             `CmdLB,`CmdLH, `CmdLW,`CmdLBU,`CmdLHU:
             begin
-                
                 read_mem=1;
                 stall_from_mem=1;
                 mem_addr_to_read=mem_addr;
-                //$display("read_mem : ",read_mem,"stall ",stall_from_mem);
                 case (cmdtype)
                 `CmdLB:
                 begin
@@ -122,7 +120,8 @@ always @(*)begin
                 endcase 
                 if (mem_ctrl_busy_state[1]==1) begin
                     read_mem=0;
-                    data_len=0;                   
+                    data_len=0;  
+                    mem_addr_to_read=0;                 
                 end              
             end
             `CmdSB,`CmdSH,`CmdSW:
@@ -131,7 +130,6 @@ always @(*)begin
                 write_mem=1;
                 stall_from_mem=1;
                 mem_addr_to_read=mem_addr;
-                //$display("write mem :", write_mem);
                 case (cmdtype)
                 `CmdSB:
                 begin
@@ -151,7 +149,8 @@ always @(*)begin
                 endcase
                 if (mem_ctrl_busy_state[1]==1) begin
                     write_mem=0;
-                    data_len=0;                   
+                    data_len=0;
+                    mem_data_to_write=0;                  
                 end                   
             end          
             default:begin

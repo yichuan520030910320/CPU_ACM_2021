@@ -38,7 +38,6 @@ always @(*) begin
     else if(read1_or_not==`Readable) begin
         
         read1data=regs[readaddr1];
-        $display("read1data: ",read1data,"  readaddr: ",readaddr1);
     end
     else
         begin
@@ -49,7 +48,7 @@ end
 
 always @(*) begin
     if (rst_in==`RstEnable) begin
-        read1data=`ZeroWorld;
+        read2data=`ZeroWorld;
     end
     else if(write_or_not==`Writeable&&readaddr2==writeaddr&&read2_or_not==`Readable) begin
         read2data=writedata;

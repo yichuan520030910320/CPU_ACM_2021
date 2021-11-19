@@ -1,4 +1,5 @@
 `include"/mnt/c/Users/18303/Desktop/cpu/CPU_ACM_2021/riscv/src/define.v"
+`timescale 1ns/1ps
 
 
 module EX (
@@ -80,7 +81,6 @@ always @(*) begin
             
         end          
         `CmdBNE: begin    
-            //$display("reg1_toex: ",reg1_to_ex," reg2_toex: ",reg2_to_ex);
             if (reg1_to_ex!=reg2_to_ex) begin
                 branch_or_not=`True;
                 branch_address=pc_in+imm_in;                 
@@ -99,6 +99,7 @@ always @(*) begin
             end 
         end            
         `CmdBLTU:begin
+            //$display("reg1_to_ex: %h",reg1_to_ex," reg2_to_ex: %h",reg2_to_ex);
             if ((reg1_to_ex)<(reg2_to_ex)) begin
                 branch_or_not=`True;
                 branch_address=pc_in+imm_in;                 
@@ -168,7 +169,8 @@ always @(*) begin
         `CmdSRLI:begin
             write_rsd_or_not=`True;
             rsd_addr_to_write=rsd_to_ex;
-            rsd_data=reg1_to_ex>>imm_in[4:0];            
+            rsd_data=reg1_to_ex>>imm_in[4:0];   
+            //$display("rsd_data :",rsd_data);         
         end            
         `CmdSRAI:begin
             write_rsd_or_not=`True;

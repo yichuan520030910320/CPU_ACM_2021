@@ -29,7 +29,7 @@ begin
         instr_out=mem_ctrl_read_in;
         pc_out=pc_in; 
         // add it the if is request constantly when the mem op crash with it mem come in priority
-        read_or_not=1;      
+        read_or_not=0;      
     end else
         begin
             if( mem_ctrl_busy_state[0]==1) begin

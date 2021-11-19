@@ -44,7 +44,7 @@ wire[31:0] nowaddr=(read_mem||write_mem) ? mem_addr:intru_addr;
 wire[2:0] select_cnt=(!read_mem)?(write_mem ? mem_write_cnt :if_read_cnt):(mem_read_cnt);
 
 //select the read or write state
-assign r_or_w=(!read_mem)?(write_mem ? 1:0):(0);
+assign r_or_w=write_mem;//0 stand for read if don't write then we read
 
 //assign the addr to ram eventually
 assign a_out=nowaddr+select_cnt;
@@ -59,12 +59,12 @@ assign d_out=val[mem_write_cnt];
 
 always @(posedge clk_in) begin
     if(rst_in==1) begin
-            preaddr=0;
-        mem_read_cnt=0;
-        mem_write_cnt=0;
-        if_read_cnt=0;
-        mem_read_data=0;
-        if_read_instru=0;
+        preaddr<=0;
+        mem_read_cnt<=0;
+        mem_write_cnt<=0;
+        if_read_cnt<=0;
+        mem_read_data<=0;
+        if_read_instru<=0;
         mem_load_done<=0;
         mem_ctrl_instru_to_if<=0;
         mem_ctrl_busy_state<=0;
@@ -79,7 +79,9 @@ always @(posedge clk_in) begin
                 mem_ctrl_busy_state<=2'b01;
                 mem_load_done<=0;
                 mem_ctrl_load_to_mem<=0;
+                if_load_done<=0;
                 case (mem_read_cnt)
+                //because the read operation take a ciecle in the ram
                     1:begin
                         mem_read_data[7:0]<=d_in;                       
                     end
@@ -106,6 +108,7 @@ always @(posedge clk_in) begin
                         mem_read_cnt<=mem_read_cnt+1;                       
                     end                
             end else if(write_mem==1)begin
+                if_load_done<=0;
                 mem_ctrl_instru_to_if<=0;
                 mem_ctrl_busy_state<=2'b01;
                 mem_load_done<=0;
@@ -157,12 +160,10 @@ always @(posedge clk_in) begin
                     end 
                     preaddr<=intru_addr; 
 
-                //$display($time," below if_read_cnt : %d",if_read_cnt," preaddr  : %d",preaddr,"  intru_addr: %d",intru_addr,"  d_in %h",d_in,"   mem ctrl instru to if : %h",mem_ctrl_instru_to_if,"  if read_intru %h ",if_read_instru);
-
             end          
             else 
             begin
-                    mem_load_done<=0;
+            mem_load_done<=0;
             mem_ctrl_instru_to_if<=0;
             mem_ctrl_busy_state<=0;
             if_load_done<=0;
