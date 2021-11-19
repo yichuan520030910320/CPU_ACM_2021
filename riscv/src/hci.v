@@ -244,6 +244,7 @@ always @*
     if (~q_io_en & io_en) begin
       if (io_wr) begin
         case (io_sel)
+        
           3'h00: begin      // 0x30000 write: output byte
             if (!tx_full && io_din!=8'h00) begin
               d_tx_data = io_din;
@@ -258,7 +259,7 @@ always @*
             end
             d_state = S_DECODE; 
             d_program_finish = 1'b1;
-            $display($time);
+            $display("total time: ",$time);
             $display("IO:Return");
             $finish;
           end

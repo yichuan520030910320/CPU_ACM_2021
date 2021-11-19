@@ -12,7 +12,8 @@ int main()
 	pb[3] = pa;
 	outlln(4);
 	for (i = 0; i < 4; i++)
-		pb[0][i] = inl();
+	pb[0][i] = i+1;
+		//pb[0][i] = inl();
 	for (i = 0; i < 4; i++)
 		outl(pb[1][i]);
 	println("");

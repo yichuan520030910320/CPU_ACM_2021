@@ -54,8 +54,6 @@ always @(*) begin
         reg2_reador_not=`False;
         reg1addr=5'b00000;
         reg2addr=5'b00000;
-        reg1_to_ex=`ZeroWorld;
-        reg2_to_ex=`ZeroWorld;
         rsd_to_ex=0;
         write_rsd_or_not=`False;
         cmdtype_to_exe=6'b000000;
