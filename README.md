@@ -1,14 +1,28 @@
+# Feature Progress
+
+For feature details, please refer to project report.
+
+| Feature                             | Status      |
+| ----------------------------------- | ----------- |
+| Simulation Correct Output           | __Test OK__ |
+| FPGA Correct Output                 | __Test OK__ |
+| IF Prefetch                         |             |
+| ICache (2-Cycle Hit direct mapping) | __Test OK__ |
+| DCache (Write Back) (1-Cycle Hit)   |             |
+| Write Buffer                        |             |
+| 2-bit BTB                           |             |
+
 # my result
 
 add ichache
 
-| 测试点      | first drsft | icache 128byte | icache 256byte | icache  512byte | icache 11.22 1024byte |
-| ----------- | ----------- | -------------- | -------------- | --------------- | --------------------- |
-| array_test2 | 10483       | 7985           | 6455           | 6053            | 5021                  |
-| array_test1 | 10195       | 7479           | 6047           | 5747            | 4829                  |
-| lvalue2     | 293         | 273            | 273            | 273             | 273                   |
-| gcd         | 19259       | 11117          | 9037           | 7327            | 7167                  |
-| expr        | 130737      | 50269          | 44415          | 40319           | 40243                 |
+| 测试点      | first drsft | icache 128byte | icache 256byte | icache  512byte | icache 1024byte |
+| ----------- | ----------- | -------------- | -------------- | --------------- | --------------- |
+| array_test2 | 10483       | 7985           | 6455           | 6053            | 5021            |
+| array_test1 | 10195       | 7479           | 6047           | 5747            | 4829            |
+| lvalue2     | 293         | 273            | 273            | 273             | 273             |
+| gcd         | 19259       | 11117          | 9037           | 7327            | 7167            |
+| expr        | 130737      | 50269          | 44415          | 40319           | 40243           |
 
 # RISCV-CPU
 
