@@ -17,6 +17,8 @@ module IF_ID (
     output reg[31:0] output_instru 
 );
 reg [31:0] preinstruction_record;
+
+
 always @(posedge clk_in ) begin
     if (rst_in==0) begin
         if (rdy_in==1) begin

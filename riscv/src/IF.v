@@ -15,21 +15,23 @@ module IF (
     output reg read_or_not,  
     output  reg[31:0] intru_addr
 );
+
+
+
+
 always @(*)
 begin
     read_or_not=0;
     intru_addr=0;
     pc_out=0;
     instr_out=0;
-    stall_from_if=0;
+    stall_from_if=0;  
     if (rst_in==1) begin
         
-    end
+    end 
     else if(if_load_done==1) begin
         instr_out=mem_ctrl_read_in;
         pc_out=pc_in; 
-        // add it the if is request constantly when the mem op crash with it mem come in priority
-        read_or_not=0;      
     end else
         begin
             if( mem_ctrl_busy_state[0]==1) begin

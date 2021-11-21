@@ -1,4 +1,3 @@
-`include"/mnt/c/Users/18303/Desktop/cpu/CPU_ACM_2021/riscv/src/define.v"
 
 module MEM (
     input  wire[31:0] storedata_in,

@@ -1,4 +1,3 @@
-`include"/mnt/c/Users/18303/Desktop/cpu/CPU_ACM_2021/riscv/src/define.v"
 `timescale 1ns/1ps
 
 
@@ -26,7 +25,7 @@ always @(posedge clk_in) begin
         if_write_out<=`False;       
     end
     else begin
-        if(stall_in[4]==1&&stall_in[5]==0) begin          
+        if(stall_in[4]==1&&stall_in[5]==00&&rdy_in==1) begin          
         mem_reg_addr_out<=`ZeroWorld;
         mem_reg_data_out<=`ZeroWorld;
         if_write_out<=`False; 

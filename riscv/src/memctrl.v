@@ -1,5 +1,9 @@
 
-module memctrl (   
+module memctrl#(
+parameter INDEX_LEN   = 8,
+parameter ICACHE_SIZE =256
+
+)  (   
     input   wire    clk_in,
     input   wire    rst_in,
     input  wire     rdy_in, 
@@ -27,6 +31,17 @@ module memctrl (
     output  wire[31:0]             a_out,     // memory address
     output  wire[7:0]              d_out     // data output    
 );
+
+
+
+//icache
+reg valid[0:ICACHE_SIZE-1];
+reg[31-INDEX_LEN:0] tag[0:ICACHE_SIZE-1];
+reg[INDEX_LEN-1:0] index[0:ICACHE_SIZE-1];
+reg[31:0] icache_[0:ICACHE_SIZE-1];
+integer i;
+reg ichachswicth;
+
 //define
 reg[31:0] preaddr;
 reg[2:0] mem_read_cnt;
@@ -70,11 +85,33 @@ always @(posedge clk_in) begin
         mem_ctrl_busy_state<=0;
         if_load_done<=0;
         mem_ctrl_instru_to_if<=0;
+        ichachswicth<=1;
+        for (i =0 ;i<ICACHE_SIZE ;i=i+1 ) begin
+        valid[i]=0;
+        tag[i]=0;
+        index[i]=0;
+        icache_[i]=0;   
+        
+    end
     end
     else 
     begin
         if (rdy_in==1) begin
-            if (read_mem==1) begin
+            if(write_mem==1)begin
+                if_load_done<=0;
+                mem_ctrl_instru_to_if<=0;
+                mem_ctrl_busy_state<=2'b01;
+                mem_load_done<=0;
+                if (mem_write_cnt==data_len) begin
+                    mem_ctrl_busy_state<=0;
+                    mem_load_done<=1;
+                    mem_write_cnt<=0;
+                end else
+                    begin
+                        mem_write_cnt<=mem_write_cnt+1;                       
+                    end                   
+            end
+            else if (read_mem==1) begin
                 mem_ctrl_instru_to_if<=0;
                 mem_ctrl_busy_state<=2'b01;
                 mem_load_done<=0;
@@ -107,21 +144,20 @@ always @(posedge clk_in) begin
                     begin
                         mem_read_cnt<=mem_read_cnt+1;                       
                     end                
-            end else if(write_mem==1)begin
-                if_load_done<=0;
-                mem_ctrl_instru_to_if<=0;
-                mem_ctrl_busy_state<=2'b01;
-                mem_load_done<=0;
-                if (mem_write_cnt==data_len) begin
-                    mem_ctrl_busy_state<=0;
-                    mem_load_done<=1;
-                    mem_write_cnt<=0;
-                end else
-                    begin
-                        mem_write_cnt<=mem_write_cnt+1;                       
-                    end                   
-            end else if(if_read_or_not==1)begin
+            end  else if(if_read_or_not==1)begin
 
+                
+                if(ichachswicth==1&&valid[intru_addr[INDEX_LEN-1:0]]==1&&tag[intru_addr[INDEX_LEN-1:0]]==intru_addr[31:INDEX_LEN])begin
+                mem_ctrl_instru_to_if<=icache_[intru_addr[INDEX_LEN-1:0]];
+                if_load_done<=1;
+                mem_ctrl_busy_state<=0;
+                if_read_cnt<=0;
+                if_read_instru<=0;
+                preaddr<=intru_addr;
+                end
+                else
+                begin
+                    
                 if (preaddr!=intru_addr) begin
                     if_read_cnt<=0;
                 end
@@ -152,13 +188,20 @@ always @(posedge clk_in) begin
                     if_read_cnt<=0;
                     mem_ctrl_instru_to_if<=if_read_instru;
                     if_read_instru<=0;
-                    preaddr<=intru_addr; 
+                    preaddr<=intru_addr;
+                    valid[intru_addr[INDEX_LEN-1:0]]<=1;
+                    tag[intru_addr[INDEX_LEN-1:0]]<=intru_addr[31:INDEX_LEN];
+                    icache_[intru_addr[INDEX_LEN-1:0]]<=if_read_instru;
+
                 end else if(preaddr==intru_addr)
                     begin
                         if_read_cnt<=if_read_cnt+1;
                         preaddr<=intru_addr;                                         
                     end 
                     preaddr<=intru_addr; 
+                end
+
+
 
             end          
             else 
