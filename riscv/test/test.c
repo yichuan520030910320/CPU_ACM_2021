@@ -1,13 +1,24 @@
 #include "io.h"
-int gcd(int x, int y) {
-  if (x%y == 0) return y;
-  else return gcd(y, x%y);
-}
-
-int main() {
-    outlln(gcd(10,1));
-    outlln(gcd(34986,3087));
-    outlln(gcd(2907,1539));
-
-    return 0;
+// input: 1 2 3 4
+int a[4];
+int *pa = a;
+int main()
+{
+    int *pb[4];
+	int i;
+	pb[0] = pa;
+	pb[1] = pa;
+	pb[2] = pa;
+	pb[3] = pa;
+	outlln(4);
+	for (i = 0; i < 4; i++)
+	pb[0][i] = i+1;
+		//pb[0][i] = inl();
+	for (i = 0; i < 4; i++)
+		outl(pb[1][i]);
+	println("");
+	for (i = 0; i < 4; i++)
+		pb[2][i] = 0;
+	for (i = 0; i < 4; i++)
+		outl(pb[3][i]);
 }

@@ -2,8 +2,8 @@
 module memctrl#(
 parameter ICACHE_INDEX_LEN   = 7,
 parameter ICACHE_SIZE =128,
-parameter DCACHE_SIZE =64,
-parameter DCACHE_INDEX_LEN =6
+parameter DCACHE_SIZE =32,
+parameter DCACHE_INDEX_LEN =5
 )  (   
     input   wire    clk_in,
     input   wire    rst_in,
@@ -55,6 +55,7 @@ reg[2:0] mem_write_cnt;
 reg[2:0] if_read_cnt;
 reg[31:0] mem_read_data;
 reg[31:0] if_read_instru;
+reg[31:0] mem_write_data;
 
 
 
@@ -86,6 +87,7 @@ always @(posedge clk_in) begin
         if_read_cnt<=0;
         mem_read_data<=0;
         if_read_instru<=0;
+        mem_write_data<=0;
         mem_load_done<=0;
         mem_ctrl_instru_to_if<=0;
         mem_ctrl_busy_state<=0;
@@ -93,21 +95,30 @@ always @(posedge clk_in) begin
         mem_ctrl_instru_to_if<=0;
         ichachswicth<=1;
         dchachswicth<=1;
-        
-        for (i =0 ;i<DCACHE_SIZE ;i=i+1 ) begin
-        dcache_valid[i]=0;
-        dcache_tag[i]=0;
-        dcache_index[i]=0;
-        dcache_[i]=0;   
-        
-    end
+        for (i=0 ;i<ICACHE_SIZE ;i=i+1 ) begin
+            valid[i]=0;
+        end
+        for (i=0 ;i<DCACHE_SIZE ;i=i+1 ) begin
+            dcache_valid[i]=0;
+        end
     end
     else 
     begin
         if (rdy_in==1) begin
             if(write_mem==1)begin
-
-
+                if (0) begin
+                    if (dcache_valid[mem_addr[DCACHE_INDEX_LEN-1:0]]==1) begin
+                        
+                    end
+                    else
+                    begin
+                        
+                    end
+                    
+                end
+                else
+                    begin
+                if_load_done<=0;
                 mem_ctrl_instru_to_if<=0;
                 mem_ctrl_busy_state<=2'b01;
                 mem_load_done<=0;
@@ -115,24 +126,28 @@ always @(posedge clk_in) begin
                     mem_ctrl_busy_state<=0;
                     mem_load_done<=1;
                     mem_write_cnt<=0;
-                end else
+
+                    dcache_valid[mem_addr[DCACHE_INDEX_LEN-1:0]]<=1;
+                    dcache_tag[mem_addr[DCACHE_INDEX_LEN-1:0]]<=mem_addr[31:DCACHE_INDEX_LEN];
+                    dcache_[mem_addr[DCACHE_INDEX_LEN-1:0]]<=mem_data_to_write;
+                end 
+                else
                     begin
                         mem_write_cnt<=mem_write_cnt+1;                       
-                    end                   
+                    end   
+                    end
             end
             else if (read_mem==1) begin
-                if(dchachswicth==1&&dcache_valid[mem_addr[DCACHE_INDEX_LEN-1:0]]==1&&dcache_tag[intru_addr[DCACHE_INDEX_LEN-1:0]]==mem_addr[31:DCACHE_INDEX_LEN])begin
+                if(dchachswicth==1&&dcache_valid[mem_addr[DCACHE_INDEX_LEN-1:0]]==1&&dcache_tag[mem_addr[DCACHE_INDEX_LEN-1:0]]==mem_addr[31:DCACHE_INDEX_LEN])begin
                 mem_ctrl_load_to_mem<=dcache_[mem_addr[DCACHE_INDEX_LEN-1:0]];
-                if_load_done<=0;
                 mem_load_done<=1;
                 mem_ctrl_busy_state<=0;
-                if_read_cnt<=0;
-                if_read_instru<=0;
                 mem_read_cnt<=0;
                 mem_read_data<=0;
-                end else
+                end 
+                else
                 begin
-                    mem_ctrl_instru_to_if<=0;
+                mem_ctrl_instru_to_if<=0;
                 mem_ctrl_busy_state<=2'b01;
                 mem_load_done<=0;
                 mem_ctrl_load_to_mem<=0;
