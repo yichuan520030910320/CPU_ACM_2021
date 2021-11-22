@@ -13,13 +13,8 @@ parameter ICACHE_SIZE =128
     input  wire branch_or_not,
     input wire[31:0] branch_addr,
     //to if
-    output reg [31:0]    pc_out,
+    output reg [31:0]    pc_out
 
-    //from if
-    input  wire[31:0] instrufrom_if,
-    //to if
-    output reg [31:0] instruct_o
-    
 );
 
 

@@ -142,7 +142,10 @@ wire[5:0]id_cmdtype_to_exe_;
 wire[31:0]id_immout_;
 wire[31:0]id_pc_out_;
 
-
+//mem to mem_wb and id
+wire[4:0] rsd_addr_from_mem;
+wire[31:0] rsd_data_from_mem;
+wire  out_write_or_not_from_mem;
 ID id_ (
     .rst_in(rst_in),
     //from if_id
@@ -157,9 +160,9 @@ ID id_ (
     .ex_forward_data_i(ex_forward_data_i_),
     .ex_forward_addr_i(ex_forward_addr_i_), 
     //forwarding from mem
-    .mem_forward_id_i(mem_forward_id_i_),
-    .mem_forward_data_i(mem_forward_data_i_),
-    .mem_forward_addr_i(mem_forward_addr_i_), 
+    .mem_forward_id_i(out_write_or_not_from_mem),
+    .mem_forward_data_i(rsd_data_from_mem),
+    .mem_forward_addr_i(rsd_addr_from_mem), 
     //to regfile       
     .reg1_reador_not(reg1_reador_not_),
     .reg2_reador_not(reg2_reador_not_),
@@ -302,10 +305,7 @@ EX_MEM ex_mem_ (
     .mem_addr_out(mem_addr_out_mem)
 
 );
-//mem to mem_wb
-wire[4:0] rsd_addr_from_mem;
-wire[31:0] rsd_data_from_mem;
-wire  out_write_or_not_from_mem;
+
 
 //mem to memctrl
 wire mem_if_read;
@@ -324,15 +324,11 @@ MEM mem_ (
     .mem_addr(mem_addr_out_mem),
   
 
-    //to mem_wb
+    //to mem_wb id
     .out_rd_addr(rsd_addr_from_mem),
     .out_rd_data(rsd_data_from_mem),
     .out_write_or_not(out_write_or_not_from_mem),
 
-    //forward to id
-    .mem_forward_id_o(mem_forward_id_i_),
-    .mem_forward_data_o(mem_forward_data_i_),
-    .mem_forward_addr_o    (mem_forward_addr_i_),
 
     //to stallctrl
     .stall_from_mem(mem_stall),

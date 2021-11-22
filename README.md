@@ -1,3 +1,11 @@
+# record my emoji every day
+
+## 11.22
+
+:laughing:
+
+
+
 # Feature Progress
 
 For feature details, please refer to project report.
@@ -23,6 +31,8 @@ add ichache
 | lvalue2     | 293         | 273            | 273            | 273             | 273             |
 | gcd         | 19259       | 11117          | 9037           | 7327            | 7167            |
 | expr        | 130737      | 50269          | 44415          | 40319           | 40243           |
+
+add dcache
 
 # RISCV-CPU
 

@@ -15,10 +15,6 @@ module IF (
     output reg read_or_not,  
     output  reg[31:0] intru_addr
 );
-
-
-
-
 always @(*)
 begin
     read_or_not=0;

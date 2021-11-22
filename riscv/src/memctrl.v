@@ -1,8 +1,9 @@
 
 module memctrl#(
-parameter INDEX_LEN   = 8,
-parameter ICACHE_SIZE =256
-
+parameter ICACHE_INDEX_LEN   = 7,
+parameter ICACHE_SIZE =128,
+parameter DCACHE_SIZE =64,
+parameter DCACHE_INDEX_LEN =6
 )  (   
     input   wire    clk_in,
     input   wire    rst_in,
@@ -32,12 +33,17 @@ parameter ICACHE_SIZE =256
     output  wire[7:0]              d_out     // data output    
 );
 
-
+//dcache
+reg dcache_valid[0:DCACHE_SIZE-1];
+reg[31-DCACHE_INDEX_LEN:0] dcache_tag[0:DCACHE_SIZE-1];
+reg[DCACHE_INDEX_LEN-1:0] dcache_index[0:DCACHE_SIZE-1];
+reg[31:0] dcache_[0:DCACHE_SIZE-1];
+reg dchachswicth;
 
 //icache
 reg valid[0:ICACHE_SIZE-1];
-reg[31-INDEX_LEN:0] tag[0:ICACHE_SIZE-1];
-reg[INDEX_LEN-1:0] index[0:ICACHE_SIZE-1];
+reg[31-ICACHE_INDEX_LEN:0] tag[0:ICACHE_SIZE-1];
+reg[ICACHE_INDEX_LEN-1:0] index[0:ICACHE_SIZE-1];
 reg[31:0] icache_[0:ICACHE_SIZE-1];
 integer i;
 reg ichachswicth;
@@ -86,11 +92,13 @@ always @(posedge clk_in) begin
         if_load_done<=0;
         mem_ctrl_instru_to_if<=0;
         ichachswicth<=1;
-        for (i =0 ;i<ICACHE_SIZE ;i=i+1 ) begin
-        valid[i]=0;
-        tag[i]=0;
-        index[i]=0;
-        icache_[i]=0;   
+        dchachswicth<=1;
+        
+        for (i =0 ;i<DCACHE_SIZE ;i=i+1 ) begin
+        dcache_valid[i]=0;
+        dcache_tag[i]=0;
+        dcache_index[i]=0;
+        dcache_[i]=0;   
         
     end
     end
@@ -98,7 +106,8 @@ always @(posedge clk_in) begin
     begin
         if (rdy_in==1) begin
             if(write_mem==1)begin
-                if_load_done<=0;
+
+
                 mem_ctrl_instru_to_if<=0;
                 mem_ctrl_busy_state<=2'b01;
                 mem_load_done<=0;
@@ -112,7 +121,18 @@ always @(posedge clk_in) begin
                     end                   
             end
             else if (read_mem==1) begin
-                mem_ctrl_instru_to_if<=0;
+                if(dchachswicth==1&&dcache_valid[mem_addr[DCACHE_INDEX_LEN-1:0]]==1&&dcache_tag[intru_addr[DCACHE_INDEX_LEN-1:0]]==mem_addr[31:DCACHE_INDEX_LEN])begin
+                mem_ctrl_load_to_mem<=dcache_[mem_addr[DCACHE_INDEX_LEN-1:0]];
+                if_load_done<=0;
+                mem_load_done<=1;
+                mem_ctrl_busy_state<=0;
+                if_read_cnt<=0;
+                if_read_instru<=0;
+                mem_read_cnt<=0;
+                mem_read_data<=0;
+                end else
+                begin
+                    mem_ctrl_instru_to_if<=0;
                 mem_ctrl_busy_state<=2'b01;
                 mem_load_done<=0;
                 mem_ctrl_load_to_mem<=0;
@@ -143,12 +163,11 @@ always @(posedge clk_in) begin
                 end else
                     begin
                         mem_read_cnt<=mem_read_cnt+1;                       
-                    end                
-            end  else if(if_read_or_not==1)begin
-
-                
-                if(ichachswicth==1&&valid[intru_addr[INDEX_LEN-1:0]]==1&&tag[intru_addr[INDEX_LEN-1:0]]==intru_addr[31:INDEX_LEN])begin
-                mem_ctrl_instru_to_if<=icache_[intru_addr[INDEX_LEN-1:0]];
+                    end   
+                end
+            end  else if(if_read_or_not==1)begin        
+                if(ichachswicth==1&&valid[intru_addr[ICACHE_INDEX_LEN-1:0]]==1&&tag[intru_addr[ICACHE_INDEX_LEN-1:0]]==intru_addr[31:ICACHE_INDEX_LEN])begin
+                mem_ctrl_instru_to_if<=icache_[intru_addr[ICACHE_INDEX_LEN-1:0]];
                 if_load_done<=1;
                 mem_ctrl_busy_state<=0;
                 if_read_cnt<=0;
@@ -189,9 +208,9 @@ always @(posedge clk_in) begin
                     mem_ctrl_instru_to_if<=if_read_instru;
                     if_read_instru<=0;
                     preaddr<=intru_addr;
-                    valid[intru_addr[INDEX_LEN-1:0]]<=1;
-                    tag[intru_addr[INDEX_LEN-1:0]]<=intru_addr[31:INDEX_LEN];
-                    icache_[intru_addr[INDEX_LEN-1:0]]<=if_read_instru;
+                    valid[intru_addr[ICACHE_INDEX_LEN-1:0]]<=1;
+                    tag[intru_addr[ICACHE_INDEX_LEN-1:0]]<=intru_addr[31:ICACHE_INDEX_LEN];
+                    icache_[intru_addr[ICACHE_INDEX_LEN-1:0]]<=if_read_instru;
 
                 end else if(preaddr==intru_addr)
                     begin
@@ -200,9 +219,6 @@ always @(posedge clk_in) begin
                     end 
                     preaddr<=intru_addr; 
                 end
-
-
-
             end          
             else 
             begin

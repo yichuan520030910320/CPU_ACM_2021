@@ -14,10 +14,7 @@ module MEM (
     output reg [`RegBus] out_rd_data,
     output reg out_write_or_not,
 
-    //forward to id
-    output  reg mem_forward_id_o,
-    output  reg[`RegBus] mem_forward_data_o,
-    output  reg[`RegAddrBus] mem_forward_addr_o    ,
+    
 
     //to stallctrl
     output reg stall_from_mem,
@@ -38,9 +35,6 @@ always @(*)begin
     out_rd_addr=0;
     out_rd_data=0;
     out_write_or_not=`False;
-    mem_forward_id_o=`False;
-    mem_forward_addr_o=0;
-    mem_forward_data_o=0;  
     stall_from_mem=0;
     read_mem=0;
     write_mem=0;
@@ -156,11 +150,6 @@ always @(*)begin
             end                
             endcase
         end
-    end
-    if (out_write_or_not==`True) begin
-        mem_forward_id_o=`True;
-        mem_forward_addr_o=out_rd_addr;
-        mem_forward_data_o=out_rd_data;  
     end
 end
 

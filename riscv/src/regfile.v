@@ -24,7 +24,7 @@ always @(posedge clk_in ) begin
     end    
     else 
     begin
-        for (i=0; i<32;i=i+1) regs[i]<=0;
+        
         end
 end
 always @(*) begin
