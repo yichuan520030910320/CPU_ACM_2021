@@ -41,7 +41,6 @@ always @(*)begin
     mem_addr_to_read=0;
     mem_data_to_write=0;
     data_len=0;
-    stall_from_mem=0;
     if (rst_in==`RstEnable) begin
         
     end else begin

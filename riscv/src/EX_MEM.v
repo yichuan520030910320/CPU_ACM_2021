@@ -35,6 +35,7 @@ always @(posedge clk_in) begin
         mem_addr_out<=`ZeroWorld;
         store_data_out<=0;
         cmdtype_out<=0;
+        store_data_out<=0;
 
 
     end
