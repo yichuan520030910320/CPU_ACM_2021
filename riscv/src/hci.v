@@ -241,14 +241,22 @@ always @*
     if (parity_err)
       d_err_code[DBG_UART_PARITY_ERR] = 1'b1;
 
+    
+//$display("tx_ful ",tx_full," io_din ",io_din," q_io_en: ",q_io_en," io_en: ",io_en," io_wr: ",io_wr," io_sel: ",io_sel); 
     if (~q_io_en & io_en) begin
       if (io_wr) begin
         case (io_sel)
+
+        
         
           3'h00: begin      // 0x30000 write: output byte
-            if (!tx_full && io_din!=8'h00) begin
+          //$display("tx_ful ",tx_full," io_din ",io_din); 
+          if (!tx_full && io_din!=8'h00) begin
               d_tx_data = io_din;
               d_wr_en   = 1'b1;
+              $display($time,"[HCI] io_yes tx_full : ",tx_full , " ;data : %o",io_din);
+            end else begin 
+            $display($time,"[HCI] io_no tx_full : ",tx_full , " ;data : %o",io_din);
             end
             $write("%c", io_din);
           end

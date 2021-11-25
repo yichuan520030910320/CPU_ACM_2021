@@ -365,6 +365,7 @@ MEM_WB mem_wb_ (
 
 
 memctrl memctrl_ (
+    .io_full(io_buffer_full),
     .clk_in(clk_in),
     .rst_in(rst_in),
     .rdy_in(rdy_in), 

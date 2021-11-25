@@ -1,3 +1,4 @@
+`timescale 1ns/1ps
 
 module memctrl#(
 parameter ICACHE_INDEX_LEN   = 7,
@@ -5,6 +6,7 @@ parameter ICACHE_SIZE =128,
 parameter DCACHE_SIZE =32,
 parameter DCACHE_INDEX_LEN =5
 )  (   
+    input   wire     io_full,
     input   wire    clk_in,
     input   wire    rst_in,
     input  wire     rdy_in, 
@@ -56,6 +58,8 @@ reg[2:0] if_read_cnt;
 reg[31:0] mem_read_data;
 reg[31:0] if_read_instru;
 reg[31:0] mem_write_data;
+reg[3:0] IO_cnt;
+reg IO_switch;
 
 
 
@@ -66,10 +70,18 @@ wire[31:0] nowaddr=(read_mem||write_mem) ? mem_addr:intru_addr;
 wire[2:0] select_cnt=(!read_mem)?(write_mem ? mem_write_cnt :if_read_cnt):(mem_read_cnt);
 
 //select the read or write state
-assign r_or_w=write_mem;//0 stand for read if don't write then we read
+assign r_or_w=(write_mem==1&&(mem_addr==32'h00030000||mem_addr==32'h00030004)&&((io_full==1)))?0:write_mem;//0 stand for read if don't write then we read
+//assign r_or_w=write_mem;//0 stand for read if don't write then we read
 
 //assign the addr to ram eventually
-assign a_out=nowaddr+select_cnt;
+
+
+// assign a_out=(mem_addr==32'h00030000&&(IO_cnt==2||(IO_cnt==1&&io_full==1)))||
+// (if_read_or_not==0&&((if_read_cnt>3)||(valid[intru_addr[ICACHE_INDEX_LEN-1:0]]==1&&tag[intru_addr[ICACHE_INDEX_LEN-1:0]]==intru_addr[31:ICACHE_INDEX_LEN])))
+// ||(read_mem==1&&(mem_read_cnt>=data_len||dcache_valid[mem_addr[DCACHE_INDEX_LEN-1:0]]==1&&dcache_tag[mem_addr[DCACHE_INDEX_LEN-1:0]]==mem_addr[31:DCACHE_INDEX_LEN]))
+// ?0:nowaddr+select_cnt;
+
+assign a_out=(write_mem==1&&(mem_addr==32'h00030000||mem_addr==32'h00030004)&&(io_full==1))?0:nowaddr+select_cnt;
 
 //selcet the data to write 
 wire[7:0] val[0:3];
@@ -77,7 +89,7 @@ assign val[0]=mem_data_to_write[7:0];
 assign val[1]=mem_data_to_write[15:8];
 assign val[2]=mem_data_to_write[23:16];
 assign val[3]=mem_data_to_write[31:24];
-assign d_out=val[mem_write_cnt];
+assign d_out=(write_mem==1&&(mem_addr==32'h00030000||mem_addr==32'h00030004)&&((io_full==1)))?0:val[mem_write_cnt];
 
 always @(posedge clk_in) begin
     if(rst_in==1) begin
@@ -94,7 +106,9 @@ always @(posedge clk_in) begin
         if_load_done<=0;
         mem_ctrl_instru_to_if<=0;
         ichachswicth<=1;
-        dchachswicth<=1;
+        dchachswicth<=0;
+        IO_switch<=1;
+        IO_cnt<=2;
         for (i=0 ;i<ICACHE_SIZE ;i=i+1 ) begin
             valid[i]=0;
         end
@@ -106,18 +120,52 @@ always @(posedge clk_in) begin
     begin
         if (rdy_in==1) begin
             if(write_mem==1)begin
-                if (0) begin
-                    if (dcache_valid[mem_addr[DCACHE_INDEX_LEN-1:0]]==1) begin
-                        
-                    end
-                    else
-                    begin
-                        
-                    end
-                    
+            if (IO_switch==1&&(mem_addr==32'h00030000||mem_addr==32'h00030004)) begin
+            //$display(IO_cnt);
+                if (IO_cnt==2) begin
+                //$display($time," read or write1 ",r_or_w,"  io full ",io_full," aout: ",a_out);
+                if_load_done<=0;
+                mem_ctrl_instru_to_if<=0;
+                mem_ctrl_busy_state<=2'b01;
+                mem_load_done<=0;
+                IO_cnt<=1;
                 end
+                else if(IO_cnt==1&&io_full==1)begin
+                //$display($time," read or write2 ",r_or_w,"  io full ",io_full," aout: ",a_out);
+                if_load_done<=0;
+                mem_ctrl_instru_to_if<=0;
+                mem_ctrl_busy_state<=2'b01;
+                mem_load_done<=0;
+                IO_cnt<=1;
+
+                end 
+                else if(IO_cnt==1&&io_full==0)begin
+                //$display("read or write3 ",r_or_w," mem addr %h",mem_addr+mem_write_cnt," d_out  ",d_out);
+                if_load_done<=0;
+                mem_ctrl_instru_to_if<=0;
+                mem_ctrl_busy_state<=2'b01;
+                mem_load_done<=0;
+                if (mem_write_cnt==data_len) begin
+                    mem_ctrl_busy_state<=0;
+                    mem_load_done<=1;
+                    mem_write_cnt<=0;
+                    IO_cnt<=2;
+                    dcache_valid[mem_addr[DCACHE_INDEX_LEN-1:0]]<=1;
+                    dcache_tag[mem_addr[DCACHE_INDEX_LEN-1:0]]<=mem_addr[31:DCACHE_INDEX_LEN];
+                    dcache_[mem_addr[DCACHE_INDEX_LEN-1:0]]<=mem_data_to_write;
+                end 
                 else
                     begin
+                    $display("here");
+                        mem_write_cnt<=mem_write_cnt+1;   
+                        IO_cnt<=2;
+                    end   
+                
+                end 
+                
+                
+            end
+            else begin
                 if_load_done<=0;
                 mem_ctrl_instru_to_if<=0;
                 mem_ctrl_busy_state<=2'b01;
@@ -134,9 +182,10 @@ always @(posedge clk_in) begin
                 else
                     begin
                         mem_write_cnt<=mem_write_cnt+1;                       
-                    end   
-                    end
+                    end  
             end
+                    end
+            
             else if (read_mem==1) begin
                 if(dchachswicth==1&&dcache_valid[mem_addr[DCACHE_INDEX_LEN-1:0]]==1&&dcache_tag[mem_addr[DCACHE_INDEX_LEN-1:0]]==mem_addr[31:DCACHE_INDEX_LEN])begin
                 mem_ctrl_load_to_mem<=dcache_[mem_addr[DCACHE_INDEX_LEN-1:0]];
