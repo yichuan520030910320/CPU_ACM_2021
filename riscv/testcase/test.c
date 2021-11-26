@@ -6,17 +6,8 @@ int a(){
 
 int main() {
     
-    
-    outlln(1);
-
-    
-    //outlln(1000);
-
-
-// int k=a()+a();
-// outlln(k);
-// outlln(a());
-
+    for(int i=0;i<9;i++){
+    outlln(i+4);}
     
     
 }

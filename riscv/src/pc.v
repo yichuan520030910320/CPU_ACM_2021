@@ -27,7 +27,7 @@ always @(posedge clk_in) begin
             pc_out<=branch_addr;
         end
         else if(stall_in[0]==0&&rdy_in==1) begin
-
+            
             pc_out<=pc_out+4'h4;
         end
         else begin           
