@@ -3,8 +3,8 @@
 module memctrl#(
 parameter ICACHE_INDEX_LEN   = 7,
 parameter ICACHE_SIZE =128,
-parameter DCACHE_SIZE =64,
-parameter DCACHE_INDEX_LEN =6
+parameter DCACHE_SIZE =32,
+parameter DCACHE_INDEX_LEN =5
 )  (   
     input   wire     io_full,
     input   wire    clk_in,
@@ -48,6 +48,7 @@ reg[31-ICACHE_INDEX_LEN:0] tag[0:ICACHE_SIZE-1];
 reg[ICACHE_INDEX_LEN-1:0] index[0:ICACHE_SIZE-1];
 reg[31:0] icache_[0:ICACHE_SIZE-1];
 integer i;
+integer j;
 reg ichachswicth;
 
 //define
@@ -112,14 +113,15 @@ always @(posedge clk_in) begin
         for (i=0 ;i<ICACHE_SIZE ;i=i+1 ) begin
             valid[i]<=0;
         end
-        for (i=0 ;i<DCACHE_SIZE ;i=i+1 ) begin
-            dcache_valid[i]<=0;
+        for (j=0 ;j<DCACHE_SIZE ;j=j+1 ) begin
+            dcache_valid[j]<=0;
         end
     end
     else 
     begin
         if (rdy_in==1) begin
-            if(write_mem==1)begin
+            if(write_mem==1)
+            begin
             if (IO_switch==1&&(mem_addr==32'h00030000||mem_addr==32'h00030004)) begin
                 if (IO_cnt==2) begin
                 if_load_done<=0;
@@ -224,7 +226,7 @@ end
         end
             
             else if (read_mem==1) begin
-                if(dchachswicth==1&&data_len==4&&dcache_valid[mem_addr[DCACHE_INDEX_LEN-1:0]]==1&&dcache_tag[mem_addr[DCACHE_INDEX_LEN-1:0]]==mem_addr[31:0])begin
+                if(dchachswicth==1&&dcache_valid[mem_addr[DCACHE_INDEX_LEN-1:0]]==1&&dcache_tag[mem_addr[DCACHE_INDEX_LEN-1:0]]==mem_addr[31:0])begin
                 mem_ctrl_load_to_mem<=dcache_[mem_addr[DCACHE_INDEX_LEN-1:0]];
                 mem_load_done<=1;
                 mem_ctrl_busy_state<=0;
