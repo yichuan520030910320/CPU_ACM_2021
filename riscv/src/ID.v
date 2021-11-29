@@ -41,6 +41,7 @@ wire[6:0] fun7=input_instru[31:25];
 
 
 reg[`RegBus] immreg;// record imm
+reg instruvalid;//record if the instruct is valid
 
 
 
@@ -53,9 +54,6 @@ always @(*) begin
         reg1addr=5'b00000;
         reg2addr=5'b00000;
         rsd_to_ex=0;
-        //can't assign!!! latch
-        // reg1_to_ex=0;
-        // reg2_to_ex=0;
         write_rsd_or_not=`False;
         cmdtype_to_exe=6'b000000;
         immout=0;

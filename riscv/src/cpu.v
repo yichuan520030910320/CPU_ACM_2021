@@ -30,7 +30,7 @@ module cpu(
 // - 0x30004 read: read clocks passed since cpu starts (in dword, 4 bytes)
 // - 0x30004 write: indicates program stop (will output '\0' through uart tx)
 
-
+wire rst = rst_in | ~rdy_in;
 //stall
 wire[5:0] from_stall_ctrl;
 wire  if_stall;
@@ -49,7 +49,7 @@ wire [31:0] branch_out_addr;
 
 pc pc_(
       .clk_in(clk_in),
-      .rst_in(rst_in),
+      .rst_in(rst),
       .rdy_in(rdy_in), 
       //from stallctrl
       .stall_in(from_stall_ctrl),
@@ -77,7 +77,7 @@ wire[31:0] memctrl_load_to_mem;
 wire if_load_done;
 wire [31:0] memctrl_load_to_if;
 IF if_ (
-    .rst_in(rst_in),
+    .rst_in(rst),
     //from pc
     .pc_in(pc_to_if),
     //to if_id
@@ -100,7 +100,7 @@ wire[31:0] if_id_instru_to_id;
 
 IF_ID if_id_ (
     .clk_in(clk_in),
-    .rst_in(rst_in),
+    .rst_in(rst),
     .rdy_in(rdy_in), 
     //from stall ctrl
     .stall_in(from_stall_ctrl),
@@ -147,7 +147,7 @@ wire[4:0] rsd_addr_from_mem;
 wire[31:0] rsd_data_from_mem;
 wire  out_write_or_not_from_mem;
 ID id_ (
-    .rst_in(rst_in),
+    .rst_in(rst),
     //from if_id
     .input_pc(if_id_pc_to_id),
     .input_instru(if_id_instru_to_id),
@@ -187,7 +187,7 @@ wire[4:0] wb_write_addr_;
 wire[31:0] wb_write_data_;
 regfile regfile_ (
     .clk_in(clk_in),
-    .rst_in(rst_in),
+    .rst_in(rst),
     //from mem_wb
     .write_or_not(wb_write_or_not),
     .writeaddr(wb_write_addr_),
@@ -211,7 +211,7 @@ wire[31:0]imm_out_to_ex_;
 
 ID_EX id_ex_(
     .clk_in(clk_in),
-    .rst_in(rst_in),
+    .rst_in(rst),
     .rdy_in(rdy_in), 
     //from stallctrl
     .stall_in(from_stall_ctrl),
@@ -244,7 +244,7 @@ wire[5:0] ex_cmd_type_;
 wire[31:0] store_data_out_from_ex;
 EX ex_ (
 //from id_ex
-    .rst_in(rst_in), 
+    .rst_in(rst), 
     .reg1_to_ex(reg1_to_ex_),
     .reg2_to_ex(reg2_to_ex_),
     .rsd_to_ex(rsd_to_ex_),
@@ -286,7 +286,7 @@ EX_MEM ex_mem_ (
     .store_data_out(store_data_to_mem), 
 
     .clk_in(clk_in),
-    .rst_in(rst_in),
+    .rst_in(rst),
     .rdy_in(rdy_in), 
     //from stall ctrl
     .stall_in(from_stall_ctrl),
@@ -295,6 +295,7 @@ EX_MEM ex_mem_ (
     .rsd_data(ex_rsd_data_),
     .write_rsd_or_not(ex_write_or_not),
     .mem_addr(ex_mem_addr_),
+
     .cmdtype(ex_cmd_type_),    
     //to mem
     .cmdtype_out(cmdtype_to_mem),    
@@ -314,7 +315,7 @@ wire[31:0]memdata_to_write_to_memctrl;
 wire[2:0] data_len_;
 MEM mem_ (
     .storedata_in(store_data_to_mem),
-    .rst_in(rst_in),
+    .rst_in(rst),
     //from ex_mem
     .input_rd_addr(rsd_addr_out_to_mem),
     .input_rd_data(rsd_data_out_to_mem),
@@ -347,7 +348,7 @@ MEM mem_ (
 
 MEM_WB mem_wb_ (
     .clk_in(clk_in),
-    .rst_in(rst_in),
+    .rst_in(rst),
     .rdy_in(rdy_in), 
     //from stall ctrl
     .stall_in(from_stall_ctrl),
@@ -366,7 +367,7 @@ MEM_WB mem_wb_ (
 memctrl memctrl_ (
     .io_full(io_buffer_full),
     .clk_in(clk_in),
-    .rst_in(rst_in),
+    .rst_in(rst),
     .rdy_in(rdy_in), 
     //to mem and if 
     .mem_ctrl_busy_state(mem_busy_state),//[1] stand for the state of the if [0]stand for the state of the mem
