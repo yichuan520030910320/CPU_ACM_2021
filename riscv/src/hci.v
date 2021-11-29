@@ -254,6 +254,7 @@ always @*
           if (!tx_full && io_din!=8'h00) begin
               d_tx_data = io_din;
               d_wr_en   = 1'b1;
+              //
               //$display($time,"[HCI] io_yes tx_full : ",tx_full , " ;data : %o",io_din);
             end else begin 
             //$display($time,"[HCI] io_no tx_full : ",tx_full , " ;data : %o",io_din);

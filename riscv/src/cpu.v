@@ -295,7 +295,6 @@ EX_MEM ex_mem_ (
     .rsd_data(ex_rsd_data_),
     .write_rsd_or_not(ex_write_or_not),
     .mem_addr(ex_mem_addr_),
-
     .cmdtype(ex_cmd_type_),    
     //to mem
     .cmdtype_out(cmdtype_to_mem),    

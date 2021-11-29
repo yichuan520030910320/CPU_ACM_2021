@@ -3,8 +3,8 @@
 module memctrl#(
 parameter ICACHE_INDEX_LEN   = 7,
 parameter ICACHE_SIZE =128,
-parameter DCACHE_SIZE =32,
-parameter DCACHE_INDEX_LEN =5
+parameter DCACHE_SIZE =16,
+parameter DCACHE_INDEX_LEN =4
 )  (   
     input   wire     io_full,
     input   wire    clk_in,
@@ -73,9 +73,10 @@ wire[2:0] select_cnt=(!read_mem)?(write_mem ? mem_write_cnt :if_read_cnt):(mem_r
 //select the read or write state
 assign r_or_w=(write_mem==1&&(mem_addr==32'h00030000||mem_addr==32'h00030004)&&((io_full==1)))?0:write_mem;//0 stand for read if don't write then we read
 
+//to do can simplify data_len==3&&write_mem==1&&dcache_valid[mem_addr[DCACHE_INDEX_LEN-1:0]]==1&&dcache_tag[mem_addr[DCACHE_INDEX_LEN-1:0]]!=mem_addr[31:0] the calculus to one
 //assign the addr to ram eventually
 assign a_out=(write_mem==1&&(mem_addr==32'h00030000||mem_addr==32'h00030004)&&(io_full==1))?0:
-(write_mem==1&&data_len==3&&(!(mem_addr==32'h00030000||mem_addr==32'h00030004))&&dcache_valid[mem_addr[DCACHE_INDEX_LEN-1:0]]==1&&dcache_tag[mem_addr[DCACHE_INDEX_LEN-1:0]]!=mem_addr[31:0]?(dcache_tag[mem_addr[DCACHE_INDEX_LEN-1:0]]+select_cnt):nowaddr+select_cnt)
+(data_len==3&&write_mem==1&&dcache_valid[mem_addr[DCACHE_INDEX_LEN-1:0]]==1&&dcache_tag[mem_addr[DCACHE_INDEX_LEN-1:0]]!=mem_addr[31:0]?(dcache_tag[mem_addr[DCACHE_INDEX_LEN-1:0]]+select_cnt):nowaddr+select_cnt)
 ;
 //todo record pre addr!!
 
@@ -91,7 +92,7 @@ assign dcache_val[1]=dcache_[mem_addr[DCACHE_INDEX_LEN-1:0]][15:8];
 assign dcache_val[2]=dcache_[mem_addr[DCACHE_INDEX_LEN-1:0]][23:16];
 assign dcache_val[3]=dcache_[mem_addr[DCACHE_INDEX_LEN-1:0]][31:24];
 assign d_out=(write_mem==1&&(mem_addr==32'h00030000||mem_addr==32'h00030004)&&((io_full==1)))?0:
-    (write_mem==1&&data_len==3&&(!(mem_addr==32'h00030000||mem_addr==32'h00030004))&&dcache_valid[mem_addr[DCACHE_INDEX_LEN-1:0]]==1&&dcache_tag[mem_addr[DCACHE_INDEX_LEN-1:0]]!=mem_addr[31:0]?dcache_val[mem_write_cnt]:val[mem_write_cnt]);
+    (data_len==3&&write_mem==1&&dcache_valid[mem_addr[DCACHE_INDEX_LEN-1:0]]==1&&dcache_tag[mem_addr[DCACHE_INDEX_LEN-1:0]]!=mem_addr[31:0]?dcache_val[mem_write_cnt]:val[mem_write_cnt]);
 
 always @(posedge clk_in) begin
     if(rst_in==1) begin
@@ -147,6 +148,9 @@ always @(posedge clk_in) begin
                     mem_load_done<=1;
                     mem_write_cnt<=0;
                     IO_cnt<=2;
+                    dcache_valid[mem_addr[DCACHE_INDEX_LEN-1:0]]<=1;
+                    dcache_tag[mem_addr[DCACHE_INDEX_LEN-1:0]]<=mem_addr[31:0];
+                    dcache_[mem_addr[DCACHE_INDEX_LEN-1:0]]<=mem_data_to_write;
                 end 
                 else
                     begin
@@ -161,40 +165,49 @@ always @(posedge clk_in) begin
             else begin
 
 
-                if (data_len==3&&(!(mem_addr==32'h00030000||mem_addr==32'h00030004))&&dcache_valid[mem_addr[DCACHE_INDEX_LEN-1:0]]==1&&dcache_tag[mem_addr[DCACHE_INDEX_LEN-1:0]]==mem_addr[31:0]) begin
+                if (dcache_valid[mem_addr[DCACHE_INDEX_LEN-1:0]]==1&&dcache_tag[mem_addr[DCACHE_INDEX_LEN-1:0]]==mem_addr[31:0]) 
+                begin
                                         //$display("here1 hit ","   addr pre %b",a_out,"  addr now %b",mem_addr, " data pre: ", dcache_[mem_addr[DCACHE_INDEX_LEN-1:0]]," datanow :",mem_data_to_write);
 
                     dcache_valid[mem_addr[DCACHE_INDEX_LEN-1:0]]<=1;
                     dcache_tag[mem_addr[DCACHE_INDEX_LEN-1:0]]<=mem_addr[31:0];
-                    dcache_[mem_addr[DCACHE_INDEX_LEN-1:0]]<=mem_data_to_write;
+                    if (data_len==3) begin
+                    dcache_[mem_addr[DCACHE_INDEX_LEN-1:0]]<=mem_data_to_write;                      
+                    end else if (data_len==1)begin
+                        dcache_[mem_addr[DCACHE_INDEX_LEN-1:0]][15:0]<=mem_data_to_write[15:0];
+                        
+                    end else if(data_len==0)begin
+                        dcache_[mem_addr[DCACHE_INDEX_LEN-1:0]][7:0]<=mem_data_to_write[7:0];
+
+                    end
                     mem_ctrl_busy_state<=0;
                     mem_load_done<=1;
                     mem_write_cnt<=0;
                 end
 
-                else if (data_len==3&&(!(mem_addr==32'h00030000||mem_addr==32'h00030004))&&dcache_valid[mem_addr[DCACHE_INDEX_LEN-1:0]]==1&&dcache_tag[mem_addr[DCACHE_INDEX_LEN-1:0]]!=mem_addr[31:0]) begin
+                else if (data_len==3&&dcache_valid[mem_addr[DCACHE_INDEX_LEN-1:0]]==1&&dcache_tag[mem_addr[DCACHE_INDEX_LEN-1:0]]!=mem_addr[31:0])
+                begin
                     //$display("here2 miss","   addr pre %b",a_out,"  addr now %b",mem_addr, " data pre: ", dcache_[mem_addr[DCACHE_INDEX_LEN-1:0]]," datanow :",mem_data_to_write);
 
                     if_load_done<=0;
                     mem_ctrl_instru_to_if<=0;
                     mem_ctrl_busy_state<=2'b01;
                     mem_load_done<=0;
-                if (mem_write_cnt==data_len) begin
+                if (mem_write_cnt==3) begin
                     mem_ctrl_busy_state<=0;
                     mem_load_done<=1;
                     mem_write_cnt<=0;
                     dcache_valid[mem_addr[DCACHE_INDEX_LEN-1:0]]<=1;
                     dcache_tag[mem_addr[DCACHE_INDEX_LEN-1:0]]<=mem_addr[31:0];
-                    dcache_[mem_addr[DCACHE_INDEX_LEN-1:0]]<=mem_data_to_write;
+                    dcache_[mem_addr[DCACHE_INDEX_LEN-1:0]]<=mem_data_to_write;                      
                 end
                 else
                     begin
                         mem_write_cnt<=mem_write_cnt+1;                       
                     end  
             
-            end 
-
-            else 
+            end
+            else if (dcache_valid[mem_addr[DCACHE_INDEX_LEN-1:0]]==1&&dcache_tag[mem_addr[DCACHE_INDEX_LEN-1:0]]!=mem_addr[31:0])       
             begin
                 if_load_done<=0;
                 mem_ctrl_instru_to_if<=0;
@@ -204,19 +217,30 @@ always @(posedge clk_in) begin
                     mem_ctrl_busy_state<=0;
                     mem_load_done<=1;
                     mem_write_cnt<=0;
-
-                    if (data_len==3&&(!(mem_addr==32'h00030000||mem_addr==32'h00030004))) begin
-                    //$display("first hit ","  addr now %b",mem_addr, " datanow :",mem_data_to_write);
-
-                    dcache_valid[mem_addr[DCACHE_INDEX_LEN-1:0]]<=1;
-                    dcache_tag[mem_addr[DCACHE_INDEX_LEN-1:0]]<=mem_addr[31:0];
-                    dcache_[mem_addr[DCACHE_INDEX_LEN-1:0]]<=mem_data_to_write;
-end
                 end 
                 else
                     begin
                         mem_write_cnt<=mem_write_cnt+1;                       
-                    end 
+                    end  
+            end
+            else 
+            
+            begin
+                    if_load_done<=0;
+                    mem_ctrl_instru_to_if<=0;
+                    mem_ctrl_busy_state<=0;
+                    mem_load_done<=1;
+                    mem_write_cnt<=0;                   
+                    dcache_valid[mem_addr[DCACHE_INDEX_LEN-1:0]]<=1;
+                    dcache_tag[mem_addr[DCACHE_INDEX_LEN-1:0]]<=mem_addr[31:0];
+                    if (data_len==3) begin
+                        dcache_[mem_addr[DCACHE_INDEX_LEN-1:0]]<=mem_data_to_write;                      
+                    end else if (data_len==1)begin
+                        dcache_[mem_addr[DCACHE_INDEX_LEN-1:0]][15:0]<=mem_data_to_write[15:0];                       
+                    end else if(data_len==0)begin
+                        dcache_[mem_addr[DCACHE_INDEX_LEN-1:0]][7:0]<=mem_data_to_write[7:0];
+
+                    end
             end
             
 
@@ -310,10 +334,11 @@ end
                     if_read_cnt<=0;
                     mem_ctrl_instru_to_if<=if_read_instru;
                     preaddr<=intru_addr;
+                    if_read_instru<=0;
                     valid[intru_addr[ICACHE_INDEX_LEN-1:0]]<=1;
                     tag[intru_addr[ICACHE_INDEX_LEN-1:0]]<=intru_addr[31:ICACHE_INDEX_LEN];
                     icache_[intru_addr[ICACHE_INDEX_LEN-1:0]]<=if_read_instru;
-                    if_read_instru<=0;
+                    
                 end else if(preaddr==intru_addr)
                     begin
                         if_read_cnt<=if_read_cnt+1;

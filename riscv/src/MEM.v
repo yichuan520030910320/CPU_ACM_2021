@@ -35,12 +35,12 @@ always @(*)begin
     out_rd_addr=0;
     out_rd_data=0;
     out_write_or_not=`False;
-    stall_from_mem=0;
     read_mem=0;
     write_mem=0;
     mem_addr_to_read=0;
     mem_data_to_write=0;
     data_len=0;
+    stall_from_mem=0;
     if (rst_in==`RstEnable) begin
         
     end else begin
