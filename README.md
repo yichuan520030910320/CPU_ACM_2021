@@ -4,21 +4,26 @@
 
 :laughing:
 
+## 11.29
+
+finish my naive work
+
 
 
 # Feature Progress
 
 For feature details, please refer to project report.
 
-| Feature                             | Status      |
-| ----------------------------------- | ----------- |
-| Simulation Correct Output           | __Test OK__ |
-| FPGA Correct Output                 | __Test OK__ |
-| IF Prefetch                         |             |
-| ICache (2-Cycle Hit direct mapping) | __Test OK__ |
-| DCache (Write Back) (1-Cycle Hit)   |             |
-| Write Buffer                        |             |
-| 2-bit BTB                           |             |
+| Feature                                 | Status      |
+| --------------------------------------- | ----------- |
+| Simulation Correct Output               | __Test OK__ |
+| FPGA Correct Output                     | __Test OK__ |
+| IF Prefetch                             |             |
+| ICache ( direct mapping)                | __Test OK__ |
+| DCache (Write through) (direct mapping) | __Test OK__ |
+| 2-bit BTB                               |             |
+| naive mmu                               |             |
+|                                         |             |
 
 # my result
 

@@ -106,14 +106,14 @@ always @(posedge clk_in) begin
         if_load_done<=0;
         mem_ctrl_instru_to_if<=0;
         ichachswicth<=1;
-        dchachswicth<=0;
+        dchachswicth<=1;
         IO_switch<=1;
         IO_cnt<=2;
         for (i=0 ;i<ICACHE_SIZE ;i=i+1 ) begin
-            valid[i]=0;
+            valid[i]<=0;
         end
         for (i=0 ;i<DCACHE_SIZE ;i=i+1 ) begin
-            dcache_valid[i]=0;
+            dcache_valid[i]<=0;
         end
     end
     else 
@@ -150,9 +150,6 @@ always @(posedge clk_in) begin
                     mem_load_done<=1;
                     mem_write_cnt<=0;
                     IO_cnt<=2;
-                    dcache_valid[mem_addr[DCACHE_INDEX_LEN-1:0]]<=1;
-                    dcache_tag[mem_addr[DCACHE_INDEX_LEN-1:0]]<=mem_addr[31:DCACHE_INDEX_LEN];
-                    dcache_[mem_addr[DCACHE_INDEX_LEN-1:0]]<=mem_data_to_write;
                 end 
                 else
                     begin
@@ -179,12 +176,17 @@ always @(posedge clk_in) begin
                     dcache_valid[mem_addr[DCACHE_INDEX_LEN-1:0]]<=1;
                     dcache_tag[mem_addr[DCACHE_INDEX_LEN-1:0]]<=mem_addr[31:DCACHE_INDEX_LEN];
                     if (data_len==3) begin
+                    //$display("data_len add dcache 3: ",data_len,"  mem addr %h ",mem_addr);
                     dcache_[mem_addr[DCACHE_INDEX_LEN-1:0]]<=mem_data_to_write;                        
                     end
                     else if (data_len==0) begin
+                    //$display("data_len add dcache 0: ",data_len,"  mem addr %h ",mem_addr);
+
                     dcache_[mem_addr[DCACHE_INDEX_LEN-1:0]][7:0]<=mem_data_to_write[7:0];                       
                     end
                     else if (data_len==1) begin
+                    //$display("data_len add dcache 1: ",data_len,"  mem addr %h ",mem_addr);
+
                     dcache_[mem_addr[DCACHE_INDEX_LEN-1:0]][15:0]<=mem_data_to_write[15:0];                       
                     end
                     
@@ -197,7 +199,10 @@ always @(posedge clk_in) begin
                     end
             
             else if (read_mem==1) begin
+                //$display("read data_len hit dcache: ",data_len,"   mem addr hit %h :",mem_addr," is valid:",dcache_valid[mem_addr[DCACHE_INDEX_LEN-1:0]]," dcache_tag[mem_addr[DCACHE_INDEX_LEN-1:0]]:%h ",dcache_tag[mem_addr[DCACHE_INDEX_LEN-1:0]]," mem_addr[31:DCACHE_INDEX_LEN]:%h ",mem_addr[31:DCACHE_INDEX_LEN]);
+
                 if(dchachswicth==1&&dcache_valid[mem_addr[DCACHE_INDEX_LEN-1:0]]==1&&dcache_tag[mem_addr[DCACHE_INDEX_LEN-1:0]]==mem_addr[31:DCACHE_INDEX_LEN])begin
+                //$display("data_len hit dcache: ",data_len,"   mem addr hit %h :",mem_addr);
                 mem_ctrl_load_to_mem<=dcache_[mem_addr[DCACHE_INDEX_LEN-1:0]];
                 mem_load_done<=1;
                 mem_ctrl_busy_state<=0;
@@ -249,8 +254,7 @@ always @(posedge clk_in) begin
                 preaddr<=intru_addr;
                 end
                 else
-                begin
-                    
+                begin                   
                 if (preaddr!=intru_addr) begin
                     if_read_cnt<=0;
                 end
