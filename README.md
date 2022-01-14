@@ -1,5 +1,3 @@
-
-
 # Feature Progress
 
 For feature details, please refer to project report.
@@ -18,7 +16,7 @@ For feature details, please refer to project report.
 
 ***Write allocate: allocate new cache line in cache**
 
-***write buffer is an optimizen of write through**
+***write buffer is an optimizen of write through in the dcache**
 
 ***when the load occur we examine the wrie buffer to find if the data exist in the write buffer(using circular queue )**
 
@@ -44,7 +42,7 @@ add ichache
 | array_test1 | 10195       | 7479           | 6047           | 5747            | 4829            |
 | lvalue2     | 293         | 273            | 273            | 273             | 273             |
 | gcd         | 19259       | 11117          | 9037           | 7327            | 7167            |
-| expr        | 130737      | 50269          | 44415          | 40319           | 40243add dcache |
+| expr        | 130737      | 50269          | 44415          | 40319           | 40243           |
 
 
 
