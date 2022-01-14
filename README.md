@@ -9,10 +9,12 @@ For feature details, please refer to project report.
 | Data Forwarding to avoid stall                               | __Test OK__ |
 | ICache ( direct mapping)(128 entry)                          | __Test OK__ |
 | DCache (Write through&&write allocate*) (32 entry direct mapping) | __Test OK__ |
-| 32 entry **BTB** (branch target buffer )while every entry has 1 bit **BHT**(branch history table) | __Test OK__ |
+| 32 entry **BTB** (branch target buffer )while every entry has 1 bit **BHT**(branch history table)* | __Test OK__ |
 | Read Priority over Write on Miss*(dcache write buffer *maxmize the bus use rate using circular queue) | __Test OK__ |
 | naive mmu                                                    |             |
 | IF Prefetch                                                  |             |
+
+***while the btb can branch in the pc stage instead of ex stage which save 3 cycle the bht gurantee the currectness**
 
 ***Write allocate: allocate new cache line in cache**
 
