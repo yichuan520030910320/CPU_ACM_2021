@@ -14,16 +14,20 @@ finish my naive work
 
 For feature details, please refer to project report.
 
-| Feature                                 | Status      |
-| --------------------------------------- | ----------- |
-| Simulation Correct Output               | __Test OK__ |
-| FPGA Correct Output                     | __Test OK__ |
-| IF Prefetch                             |             |
-| ICache ( direct mapping)                | __Test OK__ |
-| DCache (Write through) (direct mapping) | __Test OK__ |
-| 2-bit BTB                               |             |
-| naive mmu                               |             |
-|                                         |             |
+| Feature                                                 | Status      |
+| ------------------------------------------------------- | ----------- |
+| Simulation Correct Output                               | __Test OK__ |
+| FPGA Correct Output                                     | __Test OK__ |
+| IF Prefetch                                             |             |
+| ICache ( direct mapping)                                | __Test OK__ |
+| DCache (Write through&write allocate*) (direct mapping) | __Test OK__ |
+| 32 entry BHT while every entry has 1 bit btb            | __Test OK__ |
+| naive mmu                                               |             |
+| Read Priority over Write on Miss(dcache write bufr)     |             |
+
+•**Write allocate: allocate new cache line in cache**
+
+
 
 # my result
 

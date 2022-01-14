@@ -54,6 +54,6 @@ always @(posedge clk_in ) begin
             preinstruction_record=0;
         end
         
-        //if(!output_pc==0)$display($time,"  %h",output_pc);
+       //if(!output_pc==0)$display($time,"  %h",output_pc);
 end
 endmodule //IF_ID
