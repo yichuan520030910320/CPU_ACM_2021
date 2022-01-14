@@ -46,15 +46,48 @@ wire[31:0] pc_to_if;
 wire branch_or_not_;
 //ex branch addr from ex to pc
 wire [31:0] branch_out_addr;
+//btb to if
+wire branch_or_not_btb_;
+wire [31:0] pc_dest_btb_;
+
+//ex to btb
+wire [31:0] pc_ex_to_btb;
+wire[31:0] pctarget_ex_to_btb;
+
+//ex to if_id id_ex pc
+wire barnch_to_stall_the_pipline;
+//btb to ex pc_predict
+wire[31:0] pc_predict;
+
+
+BTB_BHT BTB_BHT_(
+    .clk_in(clk_in),
+    .rst_in(rst),
+    .rdy_in(rdy_in), 
+    .ex_pc(pc_ex_to_btb),
+    .ex_target_pc(pctarget_ex_to_btb),
+    .ex_isbr(branch_or_not_),
+    //btb to ex 
+    .predict_pc(pc_predict),
+    //from pc
+    .pc(pc_to_if),
+    //to pc
+    .branch_or_not_btb(branch_or_not_btb_),
+    .pc_dest_btb(pc_dest_btb_)
+);
+
 
 pc pc_(
       .clk_in(clk_in),
       .rst_in(rst),
       .rdy_in(rdy_in), 
+      //from btb
+    .btb_branch_or_not(branch_or_not_btb_),
+    .btb_brach_addr(pc_dest_btb_),
       //from stallctrl
       .stall_in(from_stall_ctrl),
       //from ex
-      .branch_or_not(branch_or_not_),
+      .branch_or_not(barnch_to_stall_the_pipline),
       .branch_addr(branch_out_addr),
       //to if
       .pc_out(pc_to_if)
@@ -105,7 +138,7 @@ IF_ID if_id_ (
     //from stall ctrl
     .stall_in(from_stall_ctrl),
     //from ex
-    .branch_or_not(branch_or_not_),
+    .branch_or_not(barnch_to_stall_the_pipline),
     //from if
     .input_pc(if_pc_out_),
     .input_instru(if_instru_out_to_if_id),
@@ -216,7 +249,7 @@ ID_EX id_ex_(
     //from stallctrl
     .stall_in(from_stall_ctrl),
     //from id
-    .branch_or_not(branch_or_not_),
+    .branch_or_not(barnch_to_stall_the_pipline),
     .reg1_from_id(id_reg1_to_ex_),
     .reg2_from_id(id_reg2_to_ex_),
     .rsd_from_id(id_rsd_to_ex_),
@@ -259,10 +292,15 @@ EX ex_ (
     //to pc if_id id_ex 
     .branch_or_not(branch_or_not_),
     .branch_address(branch_out_addr),
+    .branch_to_stall_pipline(barnch_to_stall_the_pipline),
     //to ex_mem
     .mem_addr(ex_mem_addr_),
     .cmdtype_out(ex_cmd_type_), 
     .mem_val_out_for_store(store_data_out_from_ex),
+    //to btb
+    .pc_out_to_btb(pc_ex_to_btb),
+    .pc_target_to_btb(pctarget_ex_to_btb),
+    .predict_pc(pc_predict),
     //forward to id
     .isloading_ex(isloading_ex_),
     .ex_forward_id_o(ex_forward_id_i_),

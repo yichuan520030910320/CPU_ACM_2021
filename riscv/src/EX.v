@@ -2,6 +2,8 @@
 
 
 module EX (
+
+
     //from id_ex
     input  wire rst_in, 
     input wire[`RegBus] reg1_to_ex,
@@ -15,23 +17,34 @@ module EX (
     output reg[`RegAddrBus] rsd_addr_to_write,
     output reg[`RegBus] rsd_data,
     output reg write_rsd_or_not,
+
+
     output reg branch_or_not,
     output reg[`InstAddrBus] branch_address,
+    output reg branch_to_stall_pipline,
     output reg[`Dataaddress] mem_addr,
     output reg[`Cmd_Typebus] cmdtype_out, 
     output reg[31:0] mem_val_out_for_store,
+
+    //to btb
+output reg[31:0] pc_out_to_btb,
+output reg[31:0] pc_target_to_btb,
+//from btb
+input wire[31:0] predict_pc,
+
+
     //forward to id
     output  reg isloading_ex,
     output  reg ex_forward_id_o,
     output  reg[`RegBus] ex_forward_data_o,
     output  reg[`RegAddrBus] ex_forward_addr_o  
 );
+reg [31:0]branch_address_;
 always @(*) begin
     rsd_addr_to_write=5'h0;
     rsd_data=0;
     write_rsd_or_not=`False;
     branch_or_not=`False;
-    branch_address=0;
     mem_addr=`ZeroWorld;
     ex_forward_id_o=`False;
     isloading_ex=0;
@@ -39,11 +52,15 @@ always @(*) begin
     ex_forward_data_o=0;  
     cmdtype_out=cmdtype_to_exe;  
     mem_val_out_for_store=0;
+    pc_target_to_btb=0;
+    pc_out_to_btb=0;
+    branch_to_stall_pipline=0;
     if (rst_in==`RstEnable)begin
         
     end
     else 
     begin
+        pc_out_to_btb=pc_in;
         case (cmdtype_to_exe)
         
         `CmdLUI:begin
@@ -63,52 +80,71 @@ always @(*) begin
             rsd_data=4+pc_in;
             rsd_addr_to_write=rsd_to_ex;
             branch_or_not=`True;
-            branch_address=pc_in+imm_in;               
+            branch_address_=pc_in+imm_in;  
+            pc_target_to_btb=branch_address_;   
         end          
         `CmdJALR:begin
             write_rsd_or_not=`True;
             rsd_data=4+pc_in;
             rsd_addr_to_write=rsd_to_ex;
             branch_or_not=`True;
-            branch_address=(reg1_to_ex+imm_in)&~1;             
+            branch_address_=(reg1_to_ex+imm_in)&~1;
+            pc_target_to_btb=branch_address_;    
+
+
         end          
         `CmdBEQ:begin               
             if (reg1_to_ex==reg2_to_ex) begin
                 branch_or_not=`True;
-                branch_address=pc_in+imm_in;                 
+                branch_address_=pc_in+imm_in;
+                pc_target_to_btb=branch_address_;  
+
             end
             
         end          
         `CmdBNE: begin  
             if (reg1_to_ex!=reg2_to_ex) begin
                 branch_or_not=`True;
-                branch_address=pc_in+imm_in;                 
+                branch_address_=pc_in+imm_in;         
+                pc_target_to_btb=branch_address_; 
+
+
             end     
             //$display("reg1_to_ex: %h",reg1_to_ex," reg2_to_ex : %h",reg2_to_ex," barch addr:%h ",branch_address," imm :%h ",imm_in,"  pc_in :%h",pc_in);         
         end           
         `CmdBLT: begin
             if ($signed(reg1_to_ex)<$signed(reg2_to_ex)) begin
                 branch_or_not=`True;
-                branch_address=pc_in+imm_in;                 
+                branch_address_=pc_in+imm_in;      
+                pc_target_to_btb=branch_address_;  
+
+
             end 
         end              
         `CmdBGE: begin
             if ($signed(reg1_to_ex)>=$signed(reg2_to_ex)) begin
                 branch_or_not=`True;
-                branch_address=pc_in+imm_in;                 
+                branch_address_=pc_in+imm_in;     
+                pc_target_to_btb=branch_address_;  
+
+
             end 
         end            
         `CmdBLTU:begin
-            //$display("reg1_to_ex: %h",reg1_to_ex," reg2_to_ex: %h",reg2_to_ex);
             if ((reg1_to_ex)<(reg2_to_ex)) begin
                 branch_or_not=`True;
-                branch_address=pc_in+imm_in;                 
+                branch_address_=pc_in+imm_in;   
+                pc_target_to_btb=branch_address_;   
+
+
             end 
         end           
         `CmdBGEU: begin
             if ((reg1_to_ex)>=(reg2_to_ex)) begin
                 branch_or_not=`True;
-                branch_address=pc_in+imm_in;                 
+                branch_address_=pc_in+imm_in;  
+                pc_target_to_btb=branch_address_;  
+
             end 
         end          
         `CmdLB,`CmdLH,`CmdLW,`CmdLBU,`CmdLHU:begin
@@ -242,8 +278,12 @@ always @(*) begin
         default:begin
             
         end
+       
+        
 
     endcase
+    
+
 
     end
 
@@ -258,6 +298,38 @@ always @(*) begin
         
     
     
+end
+always @(*) begin
+    branch_to_stall_pipline=0;
+    branch_address=0;
+    if (rst_in==`RstEnable)begin
+        
+    end
+    else 
+    begin
+
+
+    case (cmdtype_to_exe)
+    `CmdJAL,`CmdJALR,`CmdBEQ,`CmdBNE,`CmdBLT,`CmdBGE,`CmdBLTU,`CmdBGEU:begin
+            if(branch_or_not==`True&&predict_pc!=branch_address_)begin
+                branch_to_stall_pipline=1;
+                branch_address=branch_address_;
+            end
+            if(branch_or_not==`False&&predict_pc!=pc_in+4)begin
+                branch_to_stall_pipline=1;   
+                branch_address=pc_in+4;
+            end
+        
+    end
+    default:begin
+            
+    end
+    endcase
+    // $display($time,"predict_pc  %h",predict_pc);
+    // $display($time,"branchaddr  %h",branch_address);
+    end
+
+
 end
 
 endmodule //EX

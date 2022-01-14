@@ -1,6 +1,4 @@
 
-
-
 module EX_MEM (
     //debug add
     input  wire[31:0] store_data,

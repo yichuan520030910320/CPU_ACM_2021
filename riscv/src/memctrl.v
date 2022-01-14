@@ -176,7 +176,7 @@ always @(posedge clk_in) begin
                     dcache_valid[mem_addr[DCACHE_INDEX_LEN-1:0]]<=1;
                     dcache_tag[mem_addr[DCACHE_INDEX_LEN-1:0]]<=mem_addr[31:DCACHE_INDEX_LEN];
                     if (data_len==3) begin
-                    //$display("data_len add dcache 3: ",data_len,"  mem addr %h ",mem_addr);
+                    //$display($time,"data_len add dcache 3: ",data_len,"  mem addr %h ",mem_addr);
                     dcache_[mem_addr[DCACHE_INDEX_LEN-1:0]]<=mem_data_to_write;                        
                     end
                     else if (data_len==0) begin
@@ -300,6 +300,8 @@ always @(posedge clk_in) begin
             end          
             else 
             begin
+            //todo ifprefetch for if  && write buffer for read
+            //$display("yes no requirement here");
             mem_load_done<=0;
             mem_ctrl_instru_to_if<=0;
             mem_ctrl_busy_state<=0;
