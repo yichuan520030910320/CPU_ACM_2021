@@ -1,35 +1,40 @@
-# record my emoji every day
-
-## 11.22
-
-:laughing:
-
-## 11.29
-
-finish my naive work
-
 
 
 # Feature Progress
 
 For feature details, please refer to project report.
 
-| Feature                                                 | Status      |
-| ------------------------------------------------------- | ----------- |
-| Simulation Correct Output                               | __Test OK__ |
-| FPGA Correct Output                                     | __Test OK__ |
-| IF Prefetch                                             |             |
-| ICache ( direct mapping)                                | __Test OK__ |
-| DCache (Write through&write allocate*) (direct mapping) | __Test OK__ |
-| 32 entry BHT while every entry has 1 bit btb            | __Test OK__ |
-| naive mmu                                               |             |
-| Read Priority over Write on Miss(dcache write bufr)     |             |
+| Feature                                                      | Status      |
+| ------------------------------------------------------------ | ----------- |
+| Simulation Correct Output                                    | __Test OK__ |
+| FPGA Correct Output                                          | __Test OK__ |
+| Data Forwarding to avoid stall                               | __Test OK__ |
+| ICache ( direct mapping)(128 entry)                          | __Test OK__ |
+| DCache (Write through&&write allocate*) (32 entry direct mapping) | __Test OK__ |
+| 32 entry **BTB** (branch target buffer )while every entry has 1 bit **BHT**(branch history table) | __Test OK__ |
+| Read Priority over Write on Miss*(dcache write buffer *maxmize the bus use rate using circular queue) | __Test OK__ |
+| naive mmu                                                    |             |
+| IF Prefetch                                                  |             |
 
-•**Write allocate: allocate new cache line in cache**
+***Write allocate: allocate new cache line in cache**
+
+***write buffer is an optimizen of write through**
+
+***when the load occur we examine the wrie buffer to find if the data exist in the write buffer(using circular queue )**
+
+# **Test on FPGA**
+
+the best result at the frequence of 100HZ
+
+![image-20211124112258239.png](https://s2.loli.net/2022/01/15/IjC7RtmonDJFLvi.png)
+
+![image-20211122131743871.png](https://s2.loli.net/2022/01/15/cgJyTpz47x93nGd.png)
 
 
 
-# my result
+![image-20211124104214209.png](https://s2.loli.net/2022/01/15/u8fi23AvIFx9Yoe.png)
+
+# My result on the simulation
 
 add ichache
 
@@ -39,188 +44,248 @@ add ichache
 | array_test1 | 10195       | 7479           | 6047           | 5747            | 4829            |
 | lvalue2     | 293         | 273            | 273            | 273             | 273             |
 | gcd         | 19259       | 11117          | 9037           | 7327            | 7167            |
-| expr        | 130737      | 50269          | 44415          | 40319           | 40243           |
+| expr        | 130737      | 50269          | 44415          | 40319           | 40243add dcache |
 
-add dcache
 
-# RISCV-CPU
 
-#### Repo Structure
+# LOG
 
-```
-|--riscv/
-|  |--ctrl/             Interface with FPGA
-|  |--sim/              Testbench, add to Vivado project only in simulation
-|  |--src/              Where your code should be
-|  |  |--common/                Provided UART and RAM
-|  |  |--Basys-3-Master.xdc     constraint file
-|  |  |--cpu.v                  Fill it. 
-|  |  |--hci.v                  A bus between UART/RAM and CPU
-|  |  |--ram.v                  RAM
-|  |  |--riscv_top.v            Top design
-|  |--sys/              Help compile
-|  |--testcase/         Testcases
-|  |--autorun_fpga.sh   Autorun Testcase on FPGA
-|  |--build_test.sh     Run it to build test.data from test.c
-|  |--FPGA_test.py      Test correctness on FPGA
-|  |--pd.tcl            Program device the bitstream onto FPGA
-|  |--run_test.sh       Run test
-|  |--run_test_fpga.sh  Run test on FPGA
-|--serial/              A third-party library for interfacing with FPGA ports
-```
+11.3之前 完成了环境配置和文件夹创建
 
-#### Requirement
+11.3简化id阶段 
 
-##### Basic Requirement
+11.3  简化了组合逻辑的复杂程度
 
-- Use Verilog to implement a CPU supporting part of RV32I Instruction set(2.1-2.6 in [RISC-V user manual](https://riscv.org//wp-content/uploads/2017/05/riscv-spec-v2.2.pdf)), with the provided code in this repository. 
+对于shamt操作把他们转化为立即数 可以和下面对应的操作进行归一化处理
 
-##### Grading Policy
+（注意 只有shamt的第五位是0的时候才是有效的 ）
 
-- A design meeting part of a requirement can get part of its corresponding points. 
-- The course project assignment is not mature yet. Please give practical suggestions or bug fixes for next year's project if you feel somewhere uncomfortable with current project. You should prepare a short note or presentation for your findings. You will get extra 2% for this. If you implement your suggestion and it's meaningful in both educational purpose and project perfection purpose, the extra credit will be raised up -- up to 10%. It will be a complement for your bonus part, or extra 1 point in the final grading if you get full mark in the project.
+关于阻塞赋值和非阻塞赋值的一些理解
 
-#### Details
+11.4
 
-##### RISCV-Toolchain
+无符号数就是原来的值
 
-For prerequisites, go to see https://github.com/riscv/riscv-gnu-toolchain to install necessary packages.
-The configure is: 
+bltu bgeu就不用加unsigned
 
-```
-./configure --prefix=/opt/riscv --with-arch=rv32i --with-abi=ilp32
-sudo make
-```
-**DO NOT** use `sudo make linux` which you may use in PPCA. If you have made it, just rerun `sudo make` without any deletion and everything will be ok.
-(BTW, you may use arch rv32gc for your compiler project, so keep the installation package)
+机械操作完成了ex阶段
 
-The following are some common problems you may meet when make
+- 关于符号位拓展
 
-###### `make failed`
+https://blog.csdn.net/wordwarwordwar/article/details/108039574
 
-Please first check whether you use `sudo` before `make` due to default permission setting of linux.
+开始考虑mem if设计 以及stall
 
-###### `checking for sysdeps preconfigure fragments... aarch64 alpha arm csky hppa i386 m68k microblaze mips nios2 powerpc riscv glibc requires the A extension`
+https://www.cnblogs.com/niuyourou/p/12075634.html
 
-Use configuration `./configure --prefix=/opt/riscv --with-arch=rv32ia --with-abi=ilp32`
+继续阅读这篇文章
 
-###### `xxx-ld: cannot find -lgcc`
+1.写测试来pass ori指令
 
-Go to see https://github.com/riscv/riscv-gnu-toolchain/issues/522.
+2.前传操作
 
-##### Custom
+3.停机指令
 
-In this project, the size of memory(ram) is 128K, so only address lower than 0x20000 is available. However, reading and writing from 0x30000 and 0x30004 have special meaning, you can see `riscv/src/cpu.v` for more details. 
+4.内存操作
 
-##### Simulation using iverilog
+11.12
+
+注意自动tab补全可能会出现的问题
+
+完成stall rdy_in branch ...ys说内存读写会出现这个周期发出读指令 等一个时钟周期 下下个时钟才能读到
+
+处理Nope指令...插入空指令
+
+11.13
+
+memctrl要求判断处理的东西和之前的要处理的东西是否一致 
+
+一条线的输出口可以接到两个不同的地方
+
+加入nop指令 在branch的时候我们可以把它的信息传输到中间寄存器 然后中间寄存器传输nop指令给组合逻辑 想一下Branch运行的逻辑
+
+branch的停止 我采用的是传输给中间寄存器信息 然后中间寄存器发出空的指令 而不是通过控制ctrl.v来实现
+
+cpu和ram交互是在cpu里面
 
 ```
-cd ./riscv/src
-iverilog *.v common/*/*.v
-vvp a.out
+ 	input  wire [ 7:0]          mem_din,		// data input bus
+    output wire [ 7:0]          mem_dout,		// data output bus
+    output wire [31:0]          mem_a,			// address bus (only 17:0 is used)
+    output wire                 mem_wr,			// write/read signal (1 for write)
 ```
 
-##### Serial
+在cpu_top里面实例化了ram
 
-Serial( [wjwwood/serial](https://github.com/wjwwood/serial)) is a cross-platform serial port library to help your design working on FPGA when receiving from UART. Build it by: 
+接下来是写掉mem,memctrl ,if 然后整体仔细看一遍 防止小bug 逻辑分析清楚 时序分析
 
-```bash
-git submodule init
-git submodule update
-cd serial
-make
-make install
-```
+可以削寄存器 同样的一根输出的线接到不同的模块里面
 
-##### Build test
+**关于memctrl目前我的想法是谁先进去谁先占用总线 就是if不用让给mem之后可以调整 让mem优先级更高**
 
-Use the following command to build a test, it will be a `test.data` file in folder `/riscv/test/`: 
+目前的措施是先到先得
 
-```bash
-cd riscv
-./build_test.sh testname
-```
+补充lw特殊操作不能数据前传的阻塞
 
-You can see all tests in `/riscv/testcase/` folder. 
+处理内存的结构冲突！
 
-##### FPGA
+11.15
 
-We'll provide you with Basys3 FPGA board. Use Vivado to generate bitstream and program the FPGA device. Then:
+mem_ctrl注意一点 当同时发送请求的时候 我要先处理mem的请求 
 
-In directory 'ctrl', build the controller by
+if阶段不用判断pc是不是变成branch了，我直接更改pc寄存器 if阶段的pc输入也发生了变化 这个时候 memctrl读的地址也变化了计数器重新计数
 
-```
-./build.sh
-```
+完成了mem操作
 
-Modify and run the script
+要给load指令增加特判//todo
+
+然后连线
+
+11.16
+
+开始debug争取早一些过掉simulation然后加上特性
+
+学到的一些调试技巧
 
 ```
-./run_test_fpga.sh testname
+$display($time,"XXXXXXX %h /%b/%d",xxx);
+对于一些测试点可以输出.c文件
+都是一些定位错误的方法
 ```
 
-One thing need to be modified is the USB port number of the script. For example in Windows you could find it in Devices and Printers -> Digilent USB Device -> Hardware. The number X that presented in the last line of Device Functions 'USB Serial Port (COMX)' is the port you need. The port format should be like:
+先完成肉眼浏览 然后开始调试（输出调试结合波形调试）
 
-```
-on Linux: /dev/ttyUSBX
-on WSL: /dev/ttySX
-on Windows: COMX
-```
+11.17
 
-Your Vivado may be unable to discover your FPGA, this may be caused by the lack of corresponding driver, install it by(use your own version to replace `2018.2`): 
+哭了 为什么我申请一个地址的数据 但是总线不给我数据
 
-```bash
-cd $PATH_TO_VIVADO/2018.2/data/xicom/cable_drivers/lin64
-sudo cp -i -r install_script /opt
-cd /opt/install_script/install_drivers
-sudo ./install_drivers
-```
+我emmm想不明白
 
-Then restart Vivado. 
+1是写口 我把它当成读的口了 解决
 
-To run your bitstream on FPGA, you can run: 
+对于mem的一些些理解
 
-```bash
-cd riscv
-python FPGA_test.py
-```
+注意 memctrl a_out的结果在下一个周期返回
 
-You need to modify the `path_of_bit` in `FPGA_test.py` first. 
+现阶段的目标 ：调出mem intru out to if
 
-##### Update Note
+时序逻辑的assign中 右边的值按照这个时序逻辑最后的状态（assign 是随时变化的）
 
-For some strong students that start project early based on last year's assignment, here are some changes we've made this year:
+同一个时序中不论在哪里display结果输出都是相同的 （注意不同于顺序执行 脑子要清楚）
 
-1. Fixed a bug in  `riscv_top.v`  that may cause you get wrong return value when two consecutive readings are from different data sources.
+波形调试结合输出调试
 
-2. A new `input wire io_buffer_full`  that will show the UART output buffer is full and you should stall -- otherwise some output will be missing when output requests are intensive. You can ignore the problem in the beginning stage.
+11.18
 
-   Note: you will receive `io_buffer_full` in the SECOND NEXT CYCLE from your write cycle since the FIFO module's limitation. To ensure FIFO is not full you have to stall one cycle when there are two consecutive writes to 0x30000 in two consecutive clock, especially when i-cache is on. This problem will be detected in the testcase `uartboom`. 
+关于读入的问题 分支之后丢弃了的东西要捡回来 
 
-   You're welcome to fix this problem by modifying preset code. Elegant implementation will be counted as bonus.
+现在的mem应该是比较好的 解决了一些计数的问题 emmm然后我的计数方法要比cq好 他在read时候最后用了阻塞赋值（cnt=4的时候）这样比较危险 而我采用了比较正常的写法 但是有可能会造成额外的周期数 不是很好
 
-##### Q&A
+outln(999)可以outlln (1000)就炸了！！
 
-1. `rdy_in` and `rst_in`
+11.19
 
-   The `rst_in` has higher priority with `rdy_in`, and you CANNOT DO ANYTING when `rdy_in` is zero. `rdy_in` does not affect the result of simulation, but has effect when running on FPGA. 
+跑通了之后削一些东西
 
-2. Write twice in simulation
+不要忘记改forever
 
-   This is often OK in simulation, because it uses `$write()` in a combinational circuit to simulate a write(you can find it in `hci.v`), and by the property of combinational circuit, this instruction may be executed twice. 
+**过了gcd 下一个点expr** 没有任何输出
 
-   In FPGA if everything you write is correct this will not happen. 
+11.20
 
-3. connect with FPGA
+超级感谢zyl 成功上板
 
-   Use the micro USB port on the FPGA, since we use RS232 to transmit data. 
+![image-20211120003833269.png](https://s2.loli.net/2022/01/15/R1wpHJ7GCx65Yof.png)
 
-You may meet various problems, especially when start testing on FPGA. Feel free to contact any TA for help.
+11.21
 
-##### Known issues (2021.2.3)
+add ichache
 
-1. Some will fail to run the second time on FPGA. One quick solution is to let `rst = rst_in | ~rdy_in`, however it's somehow incorrect. We hope the future TAs to investigate the phenomenon and give a correct solution.
+| 测试点      | first drsft | icache 11.22 128byte | icache 11.22 256byte | icache 11.22 512byte | icache 11.22 1024byte |
+| ----------- | ----------- | -------------------- | -------------------- | -------------------- | --------------------- |
+| array_test2 | 10483       | 7985                 | 6455                 | 6053                 | 5021                  |
+| array_test1 | 10195       | 7479                 | 6047                 | 5747                 | 4829                  |
+| lvalue2     | 293         | 273                  | 273                  | 273                  | 273                   |
+| gcd         | 19259       | 11117                | 9037                 | 7327                 | 7167                  |
+| expr        | 130737      | 50269                | 44415                | 40319                | 40243                 |
 
-2. There's not a quick simulation check test case. One possible way is to mix up some test cases that can check those CPUs failed to run on FPGA using tolerable time while not to be much easier than passing all test cases. We didn't write one yet. Also, it may be hard to design, since some failures occur with only a few strange and specific conditions.
+//todo add write back dcache
 
-3. Our updated version of `hcl` and `top` are not good enough, since it requires combinational circuits not to consider `rst` --- or timing loop will occur since `rst` is connected to `program_finish` driven by combinational circuits. Better design may be required.
+由于icache是读一片连续的地址 用直接映射效果比较好 dcache读的比较分散 个人感觉用组关联（两路组关联）的效果比较好 然后用write back的性能比较好 相比于write through可以降低总线的占用率
+
+但是组关联会导致组合逻辑复杂度上升
+
+降低lut的一个方法！：去掉初始化的for循环(除了valid)，
+
+11.23
+
+安装虚拟机
+
+和vivado
+
+端口选择012
+
+11.24
+
+test result
+
+![image-20211124104214209.png](https://s2.loli.net/2022/01/15/u8fi23AvIFx9Yoe.png)
+
+波形数值是上升沿后改变的值
+
+AC is ok!!!!!!
+
+优化decache的时候需要调整开始的初始化
+
+写掉dcache  真男鞋qwqq
+
+//todo dcache hci commment 
+
+//todo dump of statement test and we can pass the fpga input at the beginning of the test 
+
+现在的版本dcache 会导致两字的写入不在cache里面 memread操作不一定能读到
+
+11.27同样的问题qwqqqq
+
+1127基础版本真正收工
+
+if prfetch write buffer dcache 特权指令 tlb虚拟内存 mmu
+
+改掉dcache （自己搞明白）和一些版本rst问题
+
+read的时候有一些要加入到dacache里面 不用
+
+之前对于写的操作采取不同的操作在本地版本（1129上午的版本是可以成立的）simulation can pass 但是在fpga上只能过掉小的点 未能解决 所以牺牲性能采取原来的dcache写法
+
+今天才发现begin是可以匹配的
+
+可以用beyond compare比较两个文件夹 
+
+dcache杀我 时延好难调整 而且 我降频一直失败qwqqqqq 救命啊！！看不懂vivado critical path在干什莫
+
+emmm 还是用精简的设计比较好emmmm 小而精的设计还是好的
+
+只优化读的性能 写的操作全部采用write through 并且全部更新dcache 为了节省读的周期 对于写没有优化
+
+12.1 
+
+一些设想！
+
+prefetch 可以混emmm就没有向memctrl发出请求的时候xjb可以收集一些指令放在一个存储很少的寄存器中间 这样子可以保证一些Memctrl不空跑指令 write buffer同理
+
+https://kns.cnki.net/KXReader/Detail?invoice=vkKCi2kvIrgAXoMguS8h5nXrfzL1LTQJLH6y%2FaJlnZ9Oabf5sKOx2UnAQnYRBOSuKX6lcrU1gOYAC9x6%2FUlprBAHpFAE2vJ79X0lakjk8U8U%2BltOZSToRuT3wfI8MHXfh5fMfXpuYlzbW43I6YDIQ8%2Frk59IbflB0fB%2BfRep0U0%3D&DBCODE=CJFD&FileName=JSYJ200902006&TABLEName=cjfd2009&nonce=360EE0C440A548CC935133C287B9C0DD&uid=&TIMESTAMP=1638362257093
+
+一些高级的分支预测
+
+**Cache prefetching** is a technique used by computer processors to boost execution performance by fetching instructions or data from their original storage in slower memory to a faster local memory before it is actually needed (hence the term 'prefetch').[[1\]](https://en.wikipedia.org/wiki/Cache_prefetching#cite_note-:3-1) 
+
+12.5 我的memctrl写法很有利于节省周期 可以不必在addr发过来 的时候在memctrl等待一个周期	
+
+1.14
+
+循环队列来实现的write buffer 来保证正确性
+
+
+
+
+
