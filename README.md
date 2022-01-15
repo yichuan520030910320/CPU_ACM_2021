@@ -34,6 +34,44 @@ the best result at the frequence of 100HZ
 
 ![image-20211124104214209.png](https://s2.loli.net/2022/01/15/u8fi23AvIFx9Yoe.png)
 
+# Design details
+
+- about write buffer
+
+The motivation for  Write Buffer : The memory port on FPGA is completely different from RAM in modern computer, where the motivation for  Write Buffer comes from. Write Buffer dalays unimportant write behavior to gaps between reading.when the bus is spare it can be reused to store the data in the write buffer into the ram.
+
+and when I design this unit I meet a  problem that trouble me a few days, that''s because when i first design the write buffer I simply use the sequeint array so when the load instruction want a data in the write buffer the write buffer may has two entry having the same data address but different data so I can't get the correct one.So in my design ,I use a method like circuit quene so I can get the latest data in the write bufferto guarantee correctness.
+
+- about dcache
+
+A direct mapping D-Cache with size of $32 \times 4$ bytes is implemented.
+
+In my [pre_commit][https://github.com/yichuan520030910320/CPU_ACM_2021/commit/0d435f14a7e02868a939453481c9623ef4f2bcc6] I adopt a write back dcache the write policy is a mixture of write back and write through, and in detail, 4-byte store insructions use write back and other store instructions use write through. It is so arranged because of the large proportion of 4-byte store instructions, and the 4-byte block size due to limitation of units on FPGA.  
+
+![image-20220115112714175.png](https://s2.loli.net/2022/01/15/Hw1avjKIYUW27ZN.png)
+
+it can correctly run the simulation but due to the complex design the latency in the fpga is such big .So I uphold the principle
+
+"**Small is fast, simple and neat, good design is a good trade-off**" in the Bible. I change the design into write through&&write allocate and make the dache It can always make the cache the same as ram.Just simple but effective.
+
+- about BHT&BTB
+
+the outline design of btb is the same as the below
+
+![image-20211221203434740.png](https://s2.loli.net/2022/01/15/3FOokbN2dG1TKBc.png)
+
+but it can't guarantee the correctness so I adopt one bit bht to check if the instruction jump 
+
+| 33    | 32:15 | 14:2 | 1:0       |
+| ----- | ----- | ---- | --------- |
+| valid | addr  | tag  | predictor |
+
+parameter BTB_BHT_LOG_SIZE  = 5,parameter BTB_BHT_SIZE =32
+
+(note that in the addr is valid only the last 18 bit so the tag can be simplied into 13 bit (5 bit index))
+
+and it has Significant effect speed up 
+
 # My result on the simulation
 
 add ichache
