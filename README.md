@@ -30,7 +30,7 @@ For feature details, please refer to project report.
 
 # **Test on FPGA**
 
-the best result at the frequence of 100HZ
+the best result at the frequence of 100HZ（higher frequence should be tested）
 
 ![image-20211124112258239.png](https://s2.loli.net/2022/01/15/IjC7RtmonDJFLvi.png)
 
@@ -331,7 +331,11 @@ https://kns.cnki.net/KXReader/Detail?invoice=vkKCi2kvIrgAXoMguS8h5nXrfzL1LTQJLH6
 
 12.5 我的memctrl写法很有利于节省周期 可以不必在addr发过来 的时候在memctrl等待一个周期	
 
-1.14
+1.10~1.14
+
+add some bonus 
+
+BHT&BTB 实现分支预测
 
 循环队列来实现的write buffer 来保证正确性
 
