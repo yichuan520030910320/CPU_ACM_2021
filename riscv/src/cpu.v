@@ -58,12 +58,17 @@ wire[31:0] pctarget_ex_to_btb;
 wire barnch_to_stall_the_pipline;
 //btb to ex pc_predict
 wire[31:0] pc_predict;
+//pc yo if
+wire branch_predicate_or_not_pc_if;
+//ex to bht&btb
+wire if_instru_is_br;
 
 
 BTB_BHT BTB_BHT_(
     .clk_in(clk_in),
     .rst_in(rst),
     .rdy_in(rdy_in), 
+    .if_the_instru_is_br(if_instru_is_br),
     .ex_pc(pc_ex_to_btb),
     .ex_target_pc(pctarget_ex_to_btb),
     .ex_isbr(branch_or_not_),
@@ -84,6 +89,9 @@ pc pc_(
       //from btb
     .btb_branch_or_not(branch_or_not_btb_),
     .btb_brach_addr(pc_dest_btb_),
+    //to if
+    .btb_branch_predict_or_not(branch_predicate_or_not_pc_if), 
+
       //from stallctrl
       .stall_in(from_stall_ctrl),
       //from ex
@@ -109,8 +117,14 @@ wire memload_done;
 wire[31:0] memctrl_load_to_mem;
 wire if_load_done;
 wire [31:0] memctrl_load_to_if;
+wire branch_predicate_or_not_if_ifid;
 IF if_ (
     .rst_in(rst),
+    //from pc
+    .branch_predicate_or_not_in(branch_predicate_or_not_pc_if),
+    //to if_id
+    .branch_predicate_or_not_out(branch_predicate_or_not_if_ifid),
+
     //from pc
     .pc_in(pc_to_if),
     //to if_id
@@ -130,11 +144,17 @@ IF if_ (
 //if_id to id
 wire [31:0] if_id_pc_to_id;
 wire[31:0] if_id_instru_to_id;
+wire branch_predicate_or_not_ifid_id;
 
 IF_ID if_id_ (
     .clk_in(clk_in),
     .rst_in(rst),
-    .rdy_in(rdy_in), 
+    .rdy_in(rdy_in),
+    //from if
+    .branch_predicate_or_not_in(branch_predicate_or_not_if_ifid),
+    //to id
+    .branch_predicate_or_not_out(branch_predicate_or_not_ifid_id), 
+
     //from stall ctrl
     .stall_in(from_stall_ctrl),
     //from ex
@@ -179,8 +199,14 @@ wire[31:0]id_pc_out_;
 wire[4:0] rsd_addr_from_mem;
 wire[31:0] rsd_data_from_mem;
 wire  out_write_or_not_from_mem;
+wire branch_predicate_or_not_id_idex;
 ID id_ (
     .rst_in(rst),
+
+    //from ifid
+    .branch_predicate_or_not_in(branch_predicate_or_not_ifid_id),
+    //to idex
+    .branch_predicate_or_not_out(branch_predicate_or_not_id_idex),
     //from if_id
     .input_pc(if_id_pc_to_id),
     .input_instru(if_id_instru_to_id),
@@ -241,11 +267,16 @@ wire write_rsd_or_not_to_ex_;
 wire[5:0]cmdtype_to_exe_;
 wire[31:0]pc_out_to_ex_;
 wire[31:0]imm_out_to_ex_;
+wire branch_predicate_or_not_idex_ex;
 
 ID_EX id_ex_(
     .clk_in(clk_in),
     .rst_in(rst),
     .rdy_in(rdy_in), 
+    //from id
+    .branch_predicate_or_not_in(branch_predicate_or_not_id_idex),
+    //to ex
+    .branch_predicate_or_not_out(branch_predicate_or_not_idex_ex),
     //from stallctrl
     .stall_in(from_stall_ctrl),
     //from id
@@ -278,6 +309,7 @@ wire[31:0] store_data_out_from_ex;
 EX ex_ (
 //from id_ex
     .rst_in(rst), 
+    .branch_predicate_or_not_in(branch_predicate_or_not_idex_ex),
     .reg1_to_ex(reg1_to_ex_),
     .reg2_to_ex(reg2_to_ex_),
     .rsd_to_ex(rsd_to_ex_),
@@ -293,6 +325,8 @@ EX ex_ (
     .branch_or_not(branch_or_not_),
     .branch_address(branch_out_addr),
     .branch_to_stall_pipline(barnch_to_stall_the_pipline),
+
+    .if_the_instru_is_branch(if_instru_is_br),
     //to ex_mem
     .mem_addr(ex_mem_addr_),
     .cmdtype_out(ex_cmd_type_), 

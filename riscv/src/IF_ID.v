@@ -4,6 +4,13 @@ module IF_ID (
     input  wire                 clk_in,
     input wire rst_in,
     input  wire     rdy_in, 
+    //from if
+
+    input wire branch_predicate_or_not_in,
+   //to id
+    output reg branch_predicate_or_not_out,
+ 
+
     //from stall ctrl
     input  wire[5:0] stall_in,
     //from ex
@@ -32,6 +39,7 @@ always @(posedge clk_in ) begin
             output_pc<=0;
             output_instru<=0;
         end else if(stall_in[1]==0) begin
+            branch_predicate_or_not_out<=branch_predicate_or_not_in;
             output_pc <=input_pc;
             output_instru<=input_instru;
             if (input_instru==0) begin

@@ -4,7 +4,12 @@
 module ID_EX (
     input   wire    clk_in,
     input   wire    rst_in,
-    input  wire     rdy_in, 
+    input  wire     rdy_in,   
+    //from id
+
+    input wire branch_predicate_or_not_in,
+   //to ex
+    output reg branch_predicate_or_not_out,
     //from stallctrl
     input  wire[5:0] stall_in,
 
@@ -29,6 +34,7 @@ module ID_EX (
 
 
 always @(posedge clk_in) begin
+    branch_predicate_or_not_out<=branch_predicate_or_not_in;
     if(rst_in==`RstEnable)begin
         reg1_to_ex<=`ZeroWorld;
         reg2_to_ex<=`ZeroWorld;

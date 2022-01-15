@@ -12,6 +12,8 @@ parameter ICACHE_SIZE =128
     //from btb
     input wire btb_branch_or_not,
     input wire[31:0] btb_brach_addr,
+    //to if
+    output reg btb_branch_predict_or_not, 
 
 
     //from stall ctrl
@@ -31,16 +33,17 @@ wire[31:0] pc_nxt=pc_out+4;
 always @(posedge clk_in) begin
     if (!rst_in==1) begin
 if (branch_or_not==1&&rdy_in==1) begin
-
+btb_branch_predict_or_not<=0;
             pc_out<=branch_addr;
         end
     else if (stall_in[0]==0&&btb_branch_or_not==1&&rdy_in==1) begin
         pc_out<=btb_brach_addr;
+        btb_branch_predict_or_not<=1;
         
     end
      
         else if(stall_in[0]==0&&rdy_in==1) begin
-
+btb_branch_predict_or_not<=0;
             pc_out<=pc_out+4'h4;
         end
         else begin           

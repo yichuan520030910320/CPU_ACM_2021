@@ -3,6 +3,13 @@
 
 module ID (
     input  wire rst_in,
+      //from if
+
+    input wire branch_predicate_or_not_in,
+   //to id
+    output reg branch_predicate_or_not_out,
+
+
     //from if_id
     input wire[31:0] input_pc,
     input wire[31:0] input_instru,
@@ -48,6 +55,7 @@ reg instruvalid;//record if the instruct is valid
 
 
 always @(*) begin
+    branch_predicate_or_not_out=branch_predicate_or_not_in;
         reg1_reador_not=`False;
         reg2_reador_not=`False;
         reg1addr=5'b00000;

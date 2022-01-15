@@ -12,7 +12,7 @@ parameter BTB_BHT_SIZE =32
     input  wire     rdy_in, 
 
     //from ex
-
+input wire if_the_instru_is_br,
     input wire[31:0] ex_pc,
     input wire[31:0] ex_target_pc,
     input wire ex_isbr,
@@ -29,6 +29,7 @@ parameter BTB_BHT_SIZE =32
 //[33]valid [32:15]addr [14:2]tag [1:0]predictor
 
 integer  i;
+reg flush;
 reg [33:0]bht_btb [0:31];
 always @(posedge clk_in)begin
     if (rst_in==0) begin
@@ -52,9 +53,16 @@ always @(posedge clk_in)begin
             bht_btb[ex_pc[BTB_BHT_LOG_SIZE-1:0]][32:15]=ex_target_pc[17:0];  
             bht_btb[ex_pc[BTB_BHT_LOG_SIZE-1:0]][0]=1;          
         end
+        //if the tag match and but it don't jump but it is predicted to be jump
+        else if (ex_isbr==0&&if_the_instru_is_br&&flush==1&&bht_btb[ex_pc[BTB_BHT_LOG_SIZE-1:0]][33]==1&&bht_btb[ex_pc[BTB_BHT_LOG_SIZE-1:0]][14:2]==ex_pc[17:5])begin
+            bht_btb[ex_pc[BTB_BHT_LOG_SIZE-1:0]][1:0]=0;
+
+            
+        end
     end    
     else 
     begin
+        flush<=1;
         for (i=0; i<32;i=i+1) bht_btb[i]<=0;
         end
     

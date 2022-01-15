@@ -6,6 +6,7 @@ module EX (
 
     //from id_ex
     input  wire rst_in, 
+    input wire branch_predicate_or_not_in,
     input wire[`RegBus] reg1_to_ex,
     input wire[`RegBus] reg2_to_ex,
     input wire[`RegAddrBus] rsd_to_ex,
@@ -22,6 +23,10 @@ module EX (
     output reg branch_or_not,
     output reg[`InstAddrBus] branch_address,
     output reg branch_to_stall_pipline,
+
+    //to btb&bht
+    output reg if_the_instru_is_branch,
+    
     output reg[`Dataaddress] mem_addr,
     output reg[`Cmd_Typebus] cmdtype_out, 
     output reg[31:0] mem_val_out_for_store,
@@ -41,6 +46,7 @@ input wire[31:0] predict_pc,
 );
 reg [31:0]branch_address_;
 always @(*) begin
+    if_the_instru_is_branch=0;
     rsd_addr_to_write=5'h0;
     rsd_data=0;
     write_rsd_or_not=`False;
@@ -81,7 +87,8 @@ always @(*) begin
             rsd_addr_to_write=rsd_to_ex;
             branch_or_not=`True;
             branch_address_=pc_in+imm_in;  
-            pc_target_to_btb=branch_address_;   
+            pc_target_to_btb=branch_address_;  
+            if_the_instru_is_branch=1; 
         end          
         `CmdJALR:begin
             write_rsd_or_not=`True;
@@ -90,10 +97,13 @@ always @(*) begin
             branch_or_not=`True;
             branch_address_=(reg1_to_ex+imm_in)&~1;
             pc_target_to_btb=branch_address_;    
+            if_the_instru_is_branch=1; 
 
 
         end          
-        `CmdBEQ:begin               
+        `CmdBEQ:begin       
+            if_the_instru_is_branch=1; 
+
             if (reg1_to_ex==reg2_to_ex) begin
                 branch_or_not=`True;
                 branch_address_=pc_in+imm_in;
@@ -103,6 +113,8 @@ always @(*) begin
             
         end          
         `CmdBNE: begin  
+            if_the_instru_is_branch=1; 
+
             if (reg1_to_ex!=reg2_to_ex) begin
                 branch_or_not=`True;
                 branch_address_=pc_in+imm_in;         
@@ -113,6 +125,8 @@ always @(*) begin
             //$display("reg1_to_ex: %h",reg1_to_ex," reg2_to_ex : %h",reg2_to_ex," barch addr:%h ",branch_address," imm :%h ",imm_in,"  pc_in :%h",pc_in);         
         end           
         `CmdBLT: begin
+            if_the_instru_is_branch=1; 
+
             if ($signed(reg1_to_ex)<$signed(reg2_to_ex)) begin
                 branch_or_not=`True;
                 branch_address_=pc_in+imm_in;      
@@ -122,6 +136,8 @@ always @(*) begin
             end 
         end              
         `CmdBGE: begin
+            if_the_instru_is_branch=1; 
+
             if ($signed(reg1_to_ex)>=$signed(reg2_to_ex)) begin
                 branch_or_not=`True;
                 branch_address_=pc_in+imm_in;     
@@ -131,6 +147,8 @@ always @(*) begin
             end 
         end            
         `CmdBLTU:begin
+            if_the_instru_is_branch=1; 
+
             if ((reg1_to_ex)<(reg2_to_ex)) begin
                 branch_or_not=`True;
                 branch_address_=pc_in+imm_in;   
@@ -140,6 +158,8 @@ always @(*) begin
             end 
         end           
         `CmdBGEU: begin
+            if_the_instru_is_branch=1; 
+
             if ((reg1_to_ex)>=(reg2_to_ex)) begin
                 branch_or_not=`True;
                 branch_address_=pc_in+imm_in;  
