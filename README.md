@@ -1,3 +1,9 @@
+> SJTU ACM Class Architecture 2021 Assignment ( MS108 Course Project )
+
+[origin repo][https://github.com/ACMClassCourses/RISCV-CPU]
+
+![GitHub top language](https://img.shields.io/github/languages/top/yichuan520030910320/CPU_ACM_2021) ![](https://img.shields.io/badge/build%20on-XC7A35T--ICPG236C%20FPGA%20Board-brightgreen)![](https://img.shields.io/badge/Test-allpassed-brightgreen)![](https://img.shields.io/badge/generated%20on-vivado%202018.2-blue)
+
 # Feature Progress
 
 For feature details, please refer to project report.
@@ -33,6 +39,12 @@ the best result at the frequence of 100HZ
 
 
 ![image-20211124104214209.png](https://s2.loli.net/2022/01/15/u8fi23AvIFx9Yoe.png)
+
+all test result (note that the statement_test need to be programed again due to the problem issued in fpga )
+
+(the heart testcase take such time and I put the result in the above)
+
+![image-20211125235655091.png](https://s2.loli.net/2022/01/15/GEHp2fI83qah9Tr.png)
 
 # Design details
 
