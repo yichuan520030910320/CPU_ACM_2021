@@ -26,7 +26,7 @@ module EX (
 
     //to btb&bht
     output reg if_the_instru_is_branch,
-    
+
     output reg[`Dataaddress] mem_addr,
     output reg[`Cmd_Typebus] cmdtype_out, 
     output reg[31:0] mem_val_out_for_store,
@@ -319,6 +319,8 @@ always @(*) begin
     
     
 end
+
+
 always @(*) begin
     branch_to_stall_pipline=0;
     branch_address=0;
@@ -327,8 +329,6 @@ always @(*) begin
     end
     else 
     begin
-
-
     case (cmdtype_to_exe)
     `CmdJAL,`CmdJALR,`CmdBEQ,`CmdBNE,`CmdBLT,`CmdBGE,`CmdBLTU,`CmdBGEU:begin
             if(branch_or_not==`True&&predict_pc!=branch_address_)begin

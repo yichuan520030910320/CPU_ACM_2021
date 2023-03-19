@@ -100,158 +100,155 @@ add ichache
 
 # LOG
 
-11.3之前 完成了环境配置和文件夹创建
+11.3 Before completing the environment configuration and folder creation
 
-11.3简化id阶段 
+11.3 Simplifying the ID stage
 
-11.3  简化了组合逻辑的复杂程度
+11.3 Simplified the complexity of combination logic
 
-对于shamt操作把他们转化为立即数 可以和下面对应的操作进行归一化处理
+For shamt operations, they are converted into immediate values that can be unified with corresponding operations below.
 
-（注意 只有shamt的第五位是0的时候才是有效的 ）
+(Note that shamt is only valid when its fifth bit is 0)
 
-关于阻塞赋值和非阻塞赋值的一些理解
+Understanding the differences between blocking and non-blocking assignment
 
 11.4
 
-无符号数就是原来的值
+Unsigned numbers are just the original values
 
-bltu bgeu就不用加unsigned
+No need to add unsigned to bltu and bgeu
 
-机械操作完成了ex阶段
+Completed the mechanical operations of the EX stage
 
-- 关于符号位拓展
+- About sign extension
 
 https://blog.csdn.net/wordwarwordwar/article/details/108039574
 
-开始考虑mem if设计 以及stall
+Started considering MEM and IF design, as well as stalling
 
 https://www.cnblogs.com/niuyourou/p/12075634.html
 
-继续阅读这篇文章
+Continued reading this article
 
-1.写测试来pass ori指令
-
-2.前传操作
-
-3.停机指令
-
-4.内存操作
+1. Write test to pass the ORI instruction
+2. Forwarding operation
+3. Stop instruction
+4. Memory operation
 
 11.12
 
-注意自动tab补全可能会出现的问题
+Beware of problems that may arise from automatic tab completion
 
-完成stall rdy_in branch ...ys说内存读写会出现这个周期发出读指令 等一个时钟周期 下下个时钟才能读到
+Completed stall, rdy_in, branch... ys said that memory read and write operations will issue a read instruction in this cycle, wait for a clock cycle, and read the data in the next cycle.
 
-处理Nope指令...插入空指令
+Handling NOPE instruction... inserting a null instruction
 
 11.13
 
-memctrl要求判断处理的东西和之前的要处理的东西是否一致 
+MEMCTRL requires determining whether the current item to be processed is consistent with the previous item to be processed
 
-一条线的输出口可以接到两个不同的地方
+A single output line can be connected to two different places
 
-加入nop指令 在branch的时候我们可以把它的信息传输到中间寄存器 然后中间寄存器传输nop指令给组合逻辑 想一下Branch运行的逻辑
+Add NOP instruction. When processing branch, we can transmit its information to the intermediate register, and then the intermediate register transmits the NOP instruction to the combinational logic. Think about the logic of Branch operation.
 
-branch的停止 我采用的是传输给中间寄存器信息 然后中间寄存器发出空的指令 而不是通过控制ctrl.v来实现
+The stopping of the branch is achieved by transmitting information to the intermediate register and then having the intermediate register issue an empty instruction, rather than through controlling ctrl.v.
 
-cpu和ram交互是在cpu里面
+The interaction between the CPU and RAM is within the CPU.
 
 ```
- 	input  wire [ 7:0]          mem_din,		// data input bus
+luaCopy code 	input  wire [ 7:0]          mem_din,		// data input bus
     output wire [ 7:0]          mem_dout,		// data output bus
     output wire [31:0]          mem_a,			// address bus (only 17:0 is used)
     output wire                 mem_wr,			// write/read signal (1 for write)
 ```
 
-在cpu_top里面实例化了ram
+RAM is instantiated in cpu_top.
 
-接下来是写掉mem,memctrl ,if 然后整体仔细看一遍 防止小bug 逻辑分析清楚 时序分析
+Next is to write the MEM, MEMCTRL, IF, and then carefully review the whole system to prevent small bugs, clear logic analysis, and timing analysis.
 
-可以削寄存器 同样的一根输出的线接到不同的模块里面
+You can shave registers. The same output line is connected to different modules.
 
-**关于memctrl目前我的想法是谁先进去谁先占用总线 就是if不用让给mem之后可以调整 让mem优先级更高**
+**My current idea about MEMCTRL is that whoever enters first occupies the bus, meaning that IF doesn't have to give priority to MEM. This can be adjusted later to give MEM higher priority.**
 
-目前的措施是先到先得
+The current measure is first come, first served.
 
-补充lw特殊操作不能数据前传的阻塞
+Supplement the stall handling of LW special operations.
 
-处理内存的结构冲突！
+Deal with the structural conflict of memory!
 
 11.15
 
-mem_ctrl注意一点 当同时发送请求的时候 我要先处理mem的请求 
+MEM_CTRL should note that when requests are sent simultaneously, I should process MEM requests first.
 
-if阶段不用判断pc是不是变成branch了，我直接更改pc寄存器 if阶段的pc输入也发生了变化 这个时候 memctrl读的地址也变化了计数器重新计数
+IF stage does not need to judge whether PC has become a branch, I directly modify the PC register, and the PC input of the IF stage also changes. At this time, the address read by MEMCTRL also changes, and the counter counts again.
 
-完成了mem操作
+Completed MEM operation
 
-要给load指令增加特判//todo
+Add special handling for LOAD instruction //todo
 
-然后连线
+Then connect the wires.
 
 11.16
 
-开始debug争取早一些过掉simulation然后加上特性
+Begin debugging, aiming to pass the simulation early and add features.
 
-学到的一些调试技巧
+Learned some debugging skills
 
 ```
-$display($time,"XXXXXXX %h /%b/%d",xxx);
-对于一些测试点可以输出.c文件
-都是一些定位错误的方法
+perlCopy code$display($time,"XXXXXXX %h /%b/%d",xxx);
+For some test points, you can output .c files
+These are methods to locate errors
 ```
 
-先完成肉眼浏览 然后开始调试（输出调试结合波形调试）
+Complete the eye review first, and then start debugging (Output debugging combined with waveform debugging)
 
-11.17
+November 17
 
-哭了 为什么我申请一个地址的数据 但是总线不给我数据
+I cried, why did I apply for data at an address, but the bus didn't give me data?
 
-我emmm想不明白
+I can't understand it.
 
-1是写口 我把它当成读的口了 解决
+1 is the write port, I treated it as the read port. Solved.
 
-对于mem的一些些理解
+Some understanding of mem:
 
-注意 memctrl a_out的结果在下一个周期返回
+Note that the result of memctrl a_out returns in the next cycle.
 
-现阶段的目标 ：调出mem intru out to if
+Current stage goal: Adjust mem intru out to if.
 
-时序逻辑的assign中 右边的值按照这个时序逻辑最后的状态（assign 是随时变化的）
+In the timing logic of assign, the value on the right follows the final state of the timing logic (assign changes at any time).
 
-同一个时序中不论在哪里display结果输出都是相同的 （注意不同于顺序执行 脑子要清楚）
+In the same timing, the display result output is the same no matter where it is (note that this is different from sequential execution, and you need to be clear in your mind).
 
-波形调试结合输出调试
+Waveform debugging combined with output debugging.
 
-11.18
+November 18
 
-关于读入的问题 分支之后丢弃了的东西要捡回来 
+Regarding the input issue, the things discarded after the branch need to be picked up.
 
-现在的mem应该是比较好的 解决了一些计数的问题 emmm然后我的计数方法要比cq好 他在read时候最后用了阻塞赋值（cnt=4的时候）这样比较危险 而我采用了比较正常的写法 但是有可能会造成额外的周期数 不是很好
+Now the mem should be better, solving some counting problems. Emmm, and my counting method is better than cq's. He used blocking assignment at the end of the read (when cnt=4), which is more dangerous. I used a more normal writing method, but it may cause additional cycle counts, which is not very good.
 
-outln(999)可以outlln (1000)就炸了！！
+outln(999) can outlln(1000) but it will explode!
 
-11.19
+November 19
 
-跑通了之后削一些东西
+After running through, cut some stuff.
 
-不要忘记改forever
+Don't forget to modify forever.
 
-**过了gcd 下一个点expr** 没有任何输出
+**Passed gcd, next point expr** No output.
 
-11.20
+November 20
 
-超级感谢zyl 成功上板
+Super grateful to zyl, successfully on board.
 
 ![image-20211120003833269.png](https://s2.loli.net/2022/01/15/R1wpHJ7GCx65Yof.png)
 
-11.21
+November 21
 
-add ichache
+Add ichache
 
-| 测试点      | first drsft | icache 11.22 128byte | icache 11.22 256byte | icache 11.22 512byte | icache 11.22 1024byte |
+| Test point  | first drsft | icache 11.22 128byte | icache 11.22 256byte | icache 11.22 512byte | icache 11.22 1024byte |
 | ----------- | ----------- | -------------------- | -------------------- | -------------------- | --------------------- |
 | array_test2 | 10483       | 7985                 | 6455                 | 6053                 | 5021                  |
 | array_test1 | 10195       | 7479                 | 6047                 | 5747                 | 4829                  |
@@ -261,85 +258,80 @@ add ichache
 
 //todo add write back dcache
 
-由于icache是读一片连续的地址 用直接映射效果比较好 dcache读的比较分散 个人感觉用组关联（两路组关联）的效果比较好 然后用write back的性能比较好 相比于write through可以降低总线的占用率
+Since icache reads a continuous address, direct mapping has a better effect. Dcache reads are more scattered. Personally, I think the set associative (two-way set associative) has a better effect. Write back has better performance compared to write through and can reduce bus occupancy.
 
-但是组关联会导致组合逻辑复杂度上升
+However, set associative will lead to an increase in combinational logic complexity.
 
-降低lut的一个方法！：去掉初始化的for循环(除了valid)，
+One way to reduce LUT is to remove the initialization for loop (except for valid).
 
-11.23
+November 23
 
-安装虚拟机
+Install the virtual machine.
 
-和vivado
+And Vivado.
 
-端口选择012
+Select port 012.
 
-11.24
+November 24
 
-test result
+Test result.
 
 ![image-20211124104214209.png](https://s2.loli.net/2022/01/15/u8fi23AvIFx9Yoe.png)
 
-波形数值是上升沿后改变的值
+The waveform value changes after the rising edge.
 
-AC is ok!!!!!!
+AC is ok!
 
-优化decache的时候需要调整开始的初始化
+When optimizing decache, you need to adjust the initialization at the beginning.
 
-写掉dcache  真男鞋qwqq
+Write off dcache. Real men's shoes qwqq.
 
-//todo dcache hci commment 
+//todo dcache hci comment
 
-//todo dump of statement test and we can pass the fpga input at the beginning of the test 
+//todo dump of statement test and we can pass the FPGA input at the beginning of the test
 
-现在的版本dcache 会导致两字的写入不在cache里面 memread操作不一定能读到
+The current version of dcache may cause two-word writes not to be in the cache, and memread operations may not necessarily be read.
 
-11.27同样的问题qwqqqq
+November 27, the same problem qwqqqq.
 
-1127基础版本真正收工
+November 27, the basic version is officially completed.
 
-if prfetch write buffer dcache 特权指令 tlb虚拟内存 mmu
+If prefetch, write buffer, dcache, privileged instructions, TLB, virtual memory, and MMU.
 
-改掉dcache （自己搞明白）和一些版本rst问题
+Modify dcache (figure it out yourself) and some version rst issues.
 
-read的时候有一些要加入到dacache里面 不用
+During the read, some things need to be added to dcache, but not necessary.
 
-之前对于写的操作采取不同的操作在本地版本（1129上午的版本是可以成立的）simulation can pass 但是在fpga上只能过掉小的点 未能解决 所以牺牲性能采取原来的dcache写法
+Previously, different operations were performed for writing operations in the local version (the version in the morning of November 29 can be established), and the simulation can pass. However, only small points can be passed on the FPGA, and the problem has not been solved. Therefore, sacrificing performance, the original dcache writing method is adopted.
 
-今天才发现begin是可以匹配的
+I just found out today that 'begin' can be matched.
 
-可以用beyond compare比较两个文件夹 
+You can use Beyond Compare to compare two folders.
 
-dcache杀我 时延好难调整 而且 我降频一直失败qwqqqqq 救命啊！！看不懂vivado critical path在干什莫
+Dcache is killing me, the delay is so hard to adjust, and I keep failing to lower the frequency qwqqqqq. Help! I don't understand what Vivado's critical path is doing.
 
-emmm 还是用精简的设计比较好emmmm 小而精的设计还是好的
+Emmm, it's better to use a streamlined design emmmm. A small and refined design is still good.
 
-只优化读的性能 写的操作全部采用write through 并且全部更新dcache 为了节省读的周期 对于写没有优化
+Only optimize read performance. All write operations use write-through and update dcache completely. In order to save read cycles, no optimization is made for writing.
 
-12.1 
+December 1
 
-一些设想！
+Some ideas!
 
-prefetch 可以混emmm就没有向memctrl发出请求的时候xjb可以收集一些指令放在一个存储很少的寄存器中间 这样子可以保证一些Memctrl不空跑指令 write buffer同理
+Prefetch can be mixed emmm, when there is no request to memctrl, you can arbitrarily collect some instructions and place them in a register with very little storage. This can ensure that some Memctrl do not run instructions idly. Write buffer works similarly.
 
 https://kns.cnki.net/KXReader/Detail?invoice=vkKCi2kvIrgAXoMguS8h5nXrfzL1LTQJLH6y%2FaJlnZ9Oabf5sKOx2UnAQnYRBOSuKX6lcrU1gOYAC9x6%2FUlprBAHpFAE2vJ79X0lakjk8U8U%2BltOZSToRuT3wfI8MHXfh5fMfXpuYlzbW43I6YDIQ8%2Frk59IbflB0fB%2BfRep0U0%3D&DBCODE=CJFD&FileName=JSYJ200902006&TABLEName=cjfd2009&nonce=360EE0C440A548CC935133C287B9C0DD&uid=&TIMESTAMP=1638362257093
 
-一些高级的分支预测
+Some advanced branch prediction
 
-**Cache prefetching** is a technique used by computer processors to boost execution performance by fetching instructions or data from their original storage in slower memory to a faster local memory before it is actually needed (hence the term 'prefetch').[[1\]](https://en.wikipedia.org/wiki/Cache_prefetching#cite_note-:3-1) 
+**Cache prefetching** is a technique used by computer processors to boost execution performance by fetching instructions or data from their original storage in slower memory to a faster local memory before it is actually needed (hence the term 'prefetch').[[1\]](https://en.wikipedia.org/wiki/Cache_prefetching#cite_note-:3-1)
 
-12.5 我的memctrl写法很有利于节省周期 可以不必在addr发过来 的时候在memctrl等待一个周期	
+December 5, my memctrl writing method is very beneficial to save cycles, and there is no need to wait for a cycle in memctrl when addr is sent.
 
-1.10~1.14
+January 10-14
 
-add some bonus 
+Add some bonus
 
-BHT&BTB 实现分支预测
+BHT & BTB to implement branch prediction
 
-循环队列来实现的write buffer 来保证正确性
-
-
-
-
-
+Circular queue is used to implement the write buffer to ensure correctness.
